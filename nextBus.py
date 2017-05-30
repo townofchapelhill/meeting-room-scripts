@@ -28,7 +28,7 @@ for route in root.findall('route'):
 		item_head.append('blockID')
 		item_head.append('Stop Name')
 		item_head.append('Stop Times')
-		
+		# write back to csvwriter
 		csvwriter.writerow(item_head)
 		header = False
 	
