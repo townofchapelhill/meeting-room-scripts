@@ -5,12 +5,16 @@ import datetime
 
 now = datetime.datetime.now()
 today = datetime.date.today()
-bus_file = 'nextbusroutes.xml'
+
+# create an xml file in the open data unpublished folder
+bus_file = '//CHFS/Shared_Documents/OpenData/datasets/unpublished/nextbusroutes.xml'
+
+# throw an error if a "/logs" directory doesn't exist
 try:
     log_file = open('logs/' + str(today) + '-log.txt', 'w')
 except:
     error_file = open('error.txt', 'w')
-    error_file.write('ERROR - "log" directory not found')
+    error_file.write('ERROR - "logs" directory not found')
     error_file.close()
     
 # Define function to combine the XML files at each url
@@ -77,8 +81,8 @@ def convert_to_csv():
     tree = ET.parse(bus_file)
     root = tree.getroot()
 
-    # Open a file for writing
-    bus_data = open('nextbusroutes.csv', 'w')
+    # Create a CSV file in the open data unpublished folder for writing
+    bus_data = open('//CHFS/Shared_Documents/OpenData/datasets/unpublished/nextbusroutes.csv', 'w')
     log_file.write('CSV file created.\n')
 
     # Create the csv writer object
@@ -158,6 +162,7 @@ def main():
     except:
         log_file.write("ERROR - there was an error in the conversion process of the xml file.")
 
+# print error to console - missing "/logs" directory
 try:  
     main()
     log_file.write(str(now))
