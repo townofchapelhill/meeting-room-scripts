@@ -4,10 +4,14 @@ import csv
 import datetime
 
 now = datetime.datetime.now()
+today = datetime.date.today()
+usage_file = str(today) + '-reservationData.xml'
+fixed_file = str(today) + '-convertedReservationData.xml'
+
 
 def reservations_by_week():
 	
-	weekly_monthly_data = open('usage.xml', 'w')
+	weekly_monthly_data = open(usage_file, 'w')
 	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
 	body_tag = '<reservation>\n'
 	body = '</reservation>\n'
@@ -40,8 +44,8 @@ def reservations_by_week():
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
 	
-	my_file = open('usage.xml', 'r')
-	my_file2 = open('fixed.xml', 'w')
+	my_file = open(usage_file, 'r')
+	my_file2 = open(fixed_file, 'w')
 	
 	lines_of_file = my_file.readlines()
 	
@@ -55,7 +59,7 @@ def reservations_by_week():
 	
 	# parse the xml file
 	
-	tree = ET.parse("fixed.xml")
+	tree = ET.parse(fixed_file)
 	root = tree.getroot()
 	
 	count = 0
@@ -67,7 +71,7 @@ def reservations_by_week():
 	
 def reservations_by_month():
 	
-	weekly_monthly_data = open('usage.xml', 'w')
+	weekly_monthly_data = open(usage_file, 'w')
 	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
 	body_tag = '<reservation>\n'
 	body = '</reservation>\n'
@@ -88,8 +92,8 @@ def reservations_by_month():
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
 	
-	my_file = open('usage.xml', 'r')
-	my_file2 = open('fixed.xml', 'w')
+	my_file = open(usage_file, 'r')
+	my_file2 = open(fixed_file, 'w')
 	
 	lines_of_file = my_file.readlines()
 	
@@ -103,7 +107,7 @@ def reservations_by_month():
 	
 	# parse the xml file
 	
-	tree = ET.parse("fixed.xml")
+	tree = ET.parse(fixed_file)
 	root = tree.getroot()
 	
 	count = 0
@@ -115,7 +119,7 @@ def reservations_by_month():
 
 def reservations_since(days_ago):
 	
-	weekly_monthly_data = open('usage.xml', 'w')
+	weekly_monthly_data = open(usage_file, 'w')
 	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
 	body_tag = '<reservation>\n'
 	body = '</reservation>\n'
@@ -135,8 +139,8 @@ def reservations_since(days_ago):
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
 	
-	my_file = open('usage.xml', 'r')
-	my_file2 = open('fixed.xml', 'w')
+	my_file = open(usage_file, 'r')
+	my_file2 = open(fixed_file, 'w')
 	
 	lines_of_file = my_file.readlines()
 	
@@ -150,7 +154,7 @@ def reservations_since(days_ago):
 	
 	# parse the xml file
 	
-	tree = ET.parse("fixed.xml")
+	tree = ET.parse(fixed_file)
 	root = tree.getroot()
 	
 	count = 0
@@ -162,7 +166,7 @@ def reservations_since(days_ago):
 
 def pass_file():
     # Create the variable to hold the desired write file
-    reservations = open("usage.xml", "w")
+    reservations = open(usage_file, "w")
     # Create variables to hold the phrases we want to add to the beginning and end of new XML file
     doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
     body_tag = '<reservation>\n'
@@ -180,8 +184,8 @@ def pass_file():
    
 def main():
 	pass_file()
-	my_file = open('usage.xml', 'r')
-	my_file2 = open('fixed.xml', 'w')
+	my_file = open(usage_file, 'r')
+	my_file2 = open(fixed_file, 'w')
 	
 	lines_of_file = my_file.readlines()
 	
@@ -195,12 +199,12 @@ def main():
 	
 	# parse the xml file
 	
-	tree = ET.parse("fixed.xml")
+	tree = ET.parse(fixed_file)
 	root = tree.getroot()
 	
 	# open a file for writing
 	
-	resident_data = open('reserve.csv', 'w')
+	resident_data = open(str(today) + '-reservationsToday.csv', 'w')
 	
 	# create the csv writer object
 	
@@ -240,10 +244,10 @@ def main():
 	resident_data.close()
 	
 	print('Reservations today:', counter)
-	print('Reservations since last week:', reservations_since(-7))
-	print('Reservations since last month:', reservations_since(-30))
-	print()
-	print('Reservations this month:', reservations_by_month())
+	# print('Reservations since last week:', reservations_since(-7))
+	# print('Reservations since last month:', reservations_since(-30))
+	# print()
 	print('Reservations this week:', reservations_by_week())
+	print('Reservations this month:', reservations_by_month())
 	
 main()
