@@ -3,8 +3,10 @@ import xml.etree.ElementTree as ET
 import csv
 import datetime
 
+now = datetime.datetime.now()
 today = datetime.date.today()
 bus_file = str(today) + '-nextbusroutes.xml'
+log_file = open(str(today) + '-log.txt', 'w')
 
 # Define function to combine the XML files at each url
 def combine_routes(filename):
@@ -20,13 +22,17 @@ def combine_routes(filename):
         # Assign a variable to hold the route letter
         # This is updated with a new route each loop
         x = list_of_routes[route]
-        # Load each route url
-        # Change the last letter of the url each loop based on the x value holding the route letter
-        url = ('http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=chapel-hill&r='+str(x))
-        # Create a list to hold each XML file
-        blank_list = []
-        # Read and decode the XML file found at each url
-        decoded_route = urllib.request.urlopen(url).read().decode('utf-8')
+        # catches any error that arises while processing the url
+        try:
+            # Change the last letter of the url each loop based on the x value holding the route letter
+            url = ('http://webservices.nextbus.com/service/publicXMLFeed?command=schedule&a=chapel-hill&r='+str(x))
+            # Create a list to hold each XML file
+            blank_list = []
+            # Read and decode the XML file found at each url
+            decoded_route = urllib.request.urlopen(url).read().decode('utf-8')
+            log_file.write(x + " route URL successfully accessed and decoded.\n")
+        except:
+            log_file.write("ERROR - URL access or decoding error")
         # Add each line of the XML file to the empty list
         for line in decoded_route:
             blank_list.append(line)
@@ -37,8 +43,10 @@ def combine_routes(filename):
         filename.write(stripped_route_list)
         # Print success statement for each route loaded
         # This is done because the process to complete all files is long, and it allows the user to know something is happening
-        print("The", str(x)+"-"+"Route XML data has been written to your file.")
-
+        log_file.write("The " + str(x)+"-"+"Route XML data has been appended to " + \
+        str(today) + "-nextbusroutes.xml file.")
+        log_file.write('\n\n')
+            
 
 # Create function to pass a write file to combine_routes
 def pass_file():
@@ -67,9 +75,11 @@ def convert_to_csv():
 
     # Open a file for writing
     bus_data = open(str(today) + '-nextbusroutes.csv', 'w')
+    log_file.write('CSV file created.\n')
 
     # Create the csv writer object
     csvwriter = csv.writer(bus_data)
+    
     # Create empty list
     item_head = []
 
@@ -78,7 +88,7 @@ def convert_to_csv():
 
     # Create loop to convert file to csv
     for route in root.findall('route'):
-
+        # create header for csv file
         if header:
             item_head.append('Bus')
             item_head.append('Title')
@@ -91,10 +101,10 @@ def convert_to_csv():
             # Write back to csvwriter
             csvwriter.writerow(item_head)
             header = False
+            log_file.write("CSV header created, adding XML data to CSV file now...\n")
 
         # save a list of id's to know if they are already added in
         id_list = []
-    
         # loop through each <tr> in the routes
         for tr in route.findall('tr'):
             if tr.attrib['blockID'] not in id_list:
@@ -135,10 +145,17 @@ def convert_to_csv():
 def main():
     # Call the pass file function
     pass_file()
-    # Call the edit file function, which calls combine_routes
-    # Print success statement
-    print("All routes successfully written to your file.")
-    # Call the conversion function
-    convert_to_csv()
-
+    # catch any errors in the conversion process
+    try:
+        # Call the conversion function
+        convert_to_csv()
+        # Print success statement
+        log_file.write("All routes from XML successfully written to a CSV file - " + \
+        str(today) + "-nextbusroutes.csv\n\n")
+    except:
+        log_file.write("ERROR - there was an error in the conversion process of the xml file.")
+    
 main()
+log_file.write(str(now))
+log_file.close()
+print('done')
