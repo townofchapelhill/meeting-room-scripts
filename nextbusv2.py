@@ -5,8 +5,8 @@ import datetime
 
 now = datetime.datetime.now()
 today = datetime.date.today()
-bus_file = str(today) + '-nextbusroutes.xml'
-log_file = open(str(today) + '-log.txt', 'w')
+bus_file = 'nextbusroutes.xml'
+log_file = open('logs/' + str(today) + '-log.txt', 'w')
 
 # Define function to combine the XML files at each url
 def combine_routes(filename):
@@ -43,8 +43,7 @@ def combine_routes(filename):
         filename.write(stripped_route_list)
         # Print success statement for each route loaded
         # This is done because the process to complete all files is long, and it allows the user to know something is happening
-        log_file.write("The " + str(x)+"-"+"Route XML data has been appended to " + \
-        str(today) + "-nextbusroutes.xml file.")
+        log_file.write("The " + str(x)+"-"+"Route XML data has been appended to nextbusroutes.xml file.")
         log_file.write('\n\n')
             
 
@@ -74,7 +73,7 @@ def convert_to_csv():
     root = tree.getroot()
 
     # Open a file for writing
-    bus_data = open(str(today) + '-nextbusroutes.csv', 'w')
+    bus_data = open('nextbusroutes.csv', 'w')
     log_file.write('CSV file created.\n')
 
     # Create the csv writer object
@@ -150,8 +149,7 @@ def main():
         # Call the conversion function
         convert_to_csv()
         # Print success statement
-        log_file.write("All routes from XML successfully written to a CSV file - " + \
-        str(today) + "-nextbusroutes.csv\n\n")
+        log_file.write("All routes from XML successfully written to a CSV file - nextbusroutes.csv\n\n")
     except:
         log_file.write("ERROR - there was an error in the conversion process of the xml file.")
     
