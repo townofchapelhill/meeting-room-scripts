@@ -1,7 +1,10 @@
 import urllib.request
 import xml.etree.ElementTree as ET
 import csv
+import datetime
 
+today = datetime.date.today()
+bus_file = str(today) + '-nextbusroutes.xml'
 
 # Define function to combine the XML files at each url
 def combine_routes(filename):
@@ -40,7 +43,7 @@ def combine_routes(filename):
 # Create function to pass a write file to combine_routes
 def pass_file():
     # Create the variable to hold the desired write file
-    routes = open("routes_list.xml", "w")
+    routes = open(bus_file, "w")
     # Create variables to hold the phrases we want to add to the beginning and end of new XML file
     doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
     body_tag = '<body copyright = "All data copyright Chapel Hill Transit 2017.">\n'
@@ -59,11 +62,11 @@ def pass_file():
 # Written by Steven
 def convert_to_csv():
     # Parse the XML file createdin pass_file and combine_routes
-    tree = ET.parse("routes_list.xml")
+    tree = ET.parse(bus_file)
     root = tree.getroot()
 
     # Open a file for writing
-    bus_data = open('routeslist.csv', 'w')
+    bus_data = open(str(today) + '-nextbusroutes.csv', 'w')
 
     # Create the csv writer object
     csvwriter = csv.writer(bus_data)
