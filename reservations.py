@@ -1,3 +1,6 @@
+# NOTE: generally converts XML to CSV IF grandchildren of root are going to be
+# the headers of the csv file and children separate the rows
+
 import xml.etree.ElementTree as ET
 import urllib.request
 import csv
@@ -235,33 +238,25 @@ def main():
 		
 		# creates the header
 		if header:
-			date = member.find('date').tag
-			item_head.append(date)
-			time = member.find('time').tag
-			item_head.append(time)
-			description = member.find('description').tag
-			item_head.append(description)
-			location = member.find('location').tag
-			item_head.append(location)
+			# loops through each grandchild and assigns the tags as the header
+			for grandchild in root[0]:
+				item_head.append(grandchild.tag)
 			csvwriter.writerow(item_head)
 			header = False
 			# creates a counter to count the amount of reservations today
 			counter = 0
-	
-		date = member.find('date').text
-		resident.append(date)
-		time = member.find('time').text
-		resident.append(time)
-		description = member.find('description').text
-		resident.append(description)
-		location = member.find('location').text
-		resident.append(location)
+		
+		# goes through each grandchild based on the child and appends rows to csv
+		for grandchild in root[counter]:
+			resident.append(grandchild.text)
+			
 		csvwriter.writerow(resident)
+		
 		# increment counter
 		counter += 1
 		
 	resident_data.close()
-	
+		
 	# print out usage data
 	print('Reservations today:', counter)
 	# print('Reservations since last week:', reservations_since(-7))

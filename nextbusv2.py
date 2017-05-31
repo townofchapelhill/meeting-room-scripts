@@ -6,8 +6,13 @@ import datetime
 now = datetime.datetime.now()
 today = datetime.date.today()
 bus_file = 'nextbusroutes.xml'
-log_file = open('logs/' + str(today) + '-log.txt', 'w')
-
+try:
+    log_file = open('logs/' + str(today) + '-log.txt', 'w')
+except:
+    error_file = open('error.txt', 'w')
+    error_file.write('ERROR - "log" directory not found')
+    error_file.close()
+    
 # Define function to combine the XML files at each url
 def combine_routes(filename):
 
@@ -152,8 +157,13 @@ def main():
         log_file.write("All routes from XML successfully written to a CSV file - nextbusroutes.csv\n\n")
     except:
         log_file.write("ERROR - there was an error in the conversion process of the xml file.")
+
+try:  
+    main()
+    log_file.write(str(now))
+    log_file.close()
+    print('done')
+except:
+    print('ERROR - missing "logs" directory')
     
-main()
-log_file.write(str(now))
-log_file.close()
-print('done')
+
