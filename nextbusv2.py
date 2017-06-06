@@ -7,7 +7,7 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # create an xml file in the open data unpublished folder
-bus_file = r"\\CHFS\Shared Documents\OpenData\datasets\unpublishedr\nextbusroutes.xml"
+bus_file = "//CHFS/Shared Documents/OpenData/nextbusroutes.xml"
 
 # throw an error if a "/logs" directory doesn't exist
 try:
@@ -82,7 +82,7 @@ def convert_to_csv():
     root = tree.getroot()
 
     # Create a CSV file in the open data unpublished folder for writing
-    bus_data = open(r"\\CHFS\Shared Documents\OpenData\datasets\unpublishedr\nextbusroutes.csv", 'w')
+    bus_data = open("//CHFS/Shared Documents/OpenData/nextbusroutes.csv", 'w')
     log_file.write('CSV file created.\n')
 
     # Create the csv writer object
@@ -165,7 +165,7 @@ def main():
     except:
         log_file.write("ERROR - there was an error in the conversion process of the xml file.")
 
-# print error to console - missing "/logs" directory
+# print error to console - missing "source folder" directory
 try:  
     main()
     log_file.write(str(now))
@@ -173,4 +173,5 @@ try:
     print('done')
 except:
     log_file.write('ERROR - source folder for xml and csv files not found.')
+    print('error - no src')
     log_file.close()
