@@ -69,7 +69,7 @@ def create_files():
             # Ask user input for the URL address
             url_address = input("Enter the URL: ")
             # Call parse_url with the URL entered
-            parse_url(xml_data, url_address, 'u')
+            parse_url(xml_data, url_address)
             success_note = 'URL XML info successfully parsed to local XML file at' +raw_file +' at '+str(current_datetime) + ".\n"
             log_file.write(success_note)
             remove_errors()
@@ -122,92 +122,89 @@ def parse_file(write_file, filename):
 ######################
 # Function to parse XML info from url and write to file
 
-def parse_url(write_file, filename, x):
+def parse_url(write_file, filename):
 
-    # If user chooses to enter a URL
-    if x == 'u':
+    # Create main validation loop
+    main_loop = True
+    
+    # While loop is true
+    while main_loop == True:
         
-        # Create main validation loop
-        main_loop = True
+        # Allow user to add another URL
+        howmanyurls = input("Parse just this URL or add another? ('X' for just this URL 'Y' to add more): ")
         
-        # While loop is true
-        while main_loop == True:
+        # If user chooses x
+        if howmanyurls == 'X' or howmanyurls == 'x':
+            # End main loop
+            main_loop = False
+        
+            # Create a blank list to hold the initial data 
+            blank_list = []
             
-            # Allow user to add another URL
-            howmanyurls = input("Parse just this URL or add another? ('X' for just this URL 'Y' to add more): ")
+            # Try to decode the url based on different UTFs
+            try: 
+                decoded_url = urllib.request.urlopen(filename).read().decode('utf-8')
+            except UnicodeDecodeError: 
+                decoded_url = urllib.request.urlopen(filename).read().decode('utf-16')
+            except: 
+                decoded_url = urllib.request.urlopen(filename).read().decode('utf-32')
+    
+            # Iterate through the decoded url 'file', split \n characters, add \n characters to beginnings and ends of <>
+            for line in decoded_url:
+                line.split('\n')
+                if line == ">":
+                    line = (line+'\n')
+                # elif line == '<': -s
+                #     line = ('\n'+line)
+                # Append each line to the blank list 
+                blank_list.append(line)
+    
+            # Create a new list to hold the previous list 
+            whole_list = blank_list # [0:-1] -s
             
-            # If user chooses x
-            if howmanyurls == 'X' or howmanyurls == 'x':
-                # End main loop
-                main_loop = False
-            
-                # Create a blank list to hold the initial data 
-                blank_list = []
+            # Set the char to search for 
+            utf = '>\n'
+            # Prime the loop
+            x = 1
+            loop = False
+            # Iterate through the list to find the utf char
+            while loop == False and x < len(whole_list):
+                location = whole_list[x]
+                # If the utf char is found, created a stripped list that removes everything up until that point (This will be the utf line)
+                # This removal allows for stacking of mutliple URLs
+                # The doctype will be added to the written file 
+                if location == utf:
+                    end = x+1
+                    stripped_list = whole_list[end:] # changed from -1 to none -s
+                    # End the loop once the char is found 
+                    loop = True
+                # If the char is not found, continue iterating until it is found
+                x = x+1
+            # Write the stripped list to the file
+            write_file.write("".join(stripped_list))   
+            # Print for user 
+            print("The URL has been decoded and written as a URL file.")
+            # Close the written file 
+            write_file.close()
+        
+        # If user chooses Y  -s
+        elif howmanyurls ==  'Y' or howmanyurls == 'y':
+            main_loop = False
+            loop = True
+            while loop == True:
+                urls = input("Add next URL (Hit enter to stop): ")
                 
-                # Try to decode the url based on different UTFs
-                try: 
-                    decoded_url = urllib.request.urlopen(filename).read().decode('utf-8')
-                except UnicodeDecodeError: 
-                    decoded_url = urllib.request.urlopen(filename).read().decode('utf-16')
-                except: 
-                    decoded_url = urllib.request.urlopen(filename).read().decode('utf-32')
-        
-                # Iterate through the decoded url 'file', split \n characters, add \n characters to beginnings and ends of <>
-                for line in decoded_url:
-                    line.split('\n')
-                    if line == ">":
-                        line = (line+'\n')
-                    elif line == '<':
-                        line = ('\n'+line)
-                    # Append each line to the blank list 
-                    blank_list.append(line)
-        
-                # Create a new list to hold the previous list 
-                whole_list = blank_list[0:-1]
-                
-                # Set the char to search for 
-                utf = '>\n'
-                # Prime the loop
-                x = 1
-                loop = False
-                # Iterate through the list to find the utf char
-                while loop == False and x < len(whole_list):
-                    location = whole_list[x]
-                    # If the utf char is found, created a stripped list that removes everything up until that point (This will be the utf line)
-                    # This removal allows for stacking of mutliple URLs
-                    # The doctype will be added to the written file 
-                    if location == utf:
-                        end = x+1
-                        stripped_list = whole_list[end:-1]
-                        # End the loop once the char is found 
-                        loop = True
-                    # If the char is not found, continue iterating until it is found
-                    x = x+1
-                # Write the stripped list to the file
-                write_file.write("".join(stripped_list))   
-                # Print for user 
-                print("The URL has been decoded and written as a URL file.")
-                # Close the written file 
-                write_file.close()
-            
-            # If user chooses Y
-            elif howmanyurls ==  'Y' or howmanyurls == 'y':
-                main_loop = False
-                loop = True
-                while loop == True:
-                    urls = input("Add next URL (Hit enter to stop): ")
-                    
-                    if urls == "":
-                        loop = False
-             
-            # If user does not enter X or Y           
-            else: 
-                print("You must enter 'X' for one URL or 'Y' to add more. Try again.")
-                main_loop = True
+                if urls == "":
+                    loop = False
+         
+        # If user does not enter X or Y           
+        else: 
+            print("You must enter 'X' for one URL or 'Y' to add more. Try again.")
+            main_loop = True
 
 
 ######################
-# Function to clean up errors in the XML to remove before converting to CSV
+# Function to clean up errors in the XML to remove before converting to CSV -s
 
 def remove_errors():
     pass
@@ -219,7 +216,7 @@ def remove_errors():
 # Open that file and read to write to CSV file
 
 def convert_to_csv():
-    # Allow user to enter tag names
+    # Allow user to enter tag names -s
     pass
 
 

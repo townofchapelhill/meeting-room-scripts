@@ -106,6 +106,8 @@ def convert_to_csv():
             item_head.append('blockID')
             item_head.append('Stop Name')
             item_head.append('Stop Times')
+            for i in range(30):
+                item_head.append(' ')
             # Write back to csvwriter
             csvwriter.writerow(item_head)
             header = False
@@ -145,6 +147,9 @@ def convert_to_csv():
                                 if second_stop.attrib['tag'] == stop.attrib['tag']:
                                     bus_info.append(second_stop.text)
                     
+                    for i in range(30):
+                        bus_info.append('--')
+                        
                     # append the bus_info list onto the next row in csv file
                     csvwriter.writerow(bus_info)
                 
