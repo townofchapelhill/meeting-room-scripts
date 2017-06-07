@@ -75,7 +75,7 @@ def create_files():
             log_file.write(success_note)
             remove_errors(raw_file,final_file)
             # CONVERT TO CSV
-            #convert_to_csv(xml_data, csv_file)
+            convert_to_csv(final_file, csv_file)
             loop = True
             
         # If the user chooses to go back -- e.g. they spelled the output file name wrong
@@ -218,8 +218,9 @@ def remove_errors(raw_file, final_file):
     # change the xml data to take away invalid tokens (& to and) 
     # and save to a different file
     for line in lines_of_file:
-        if '&' in line:
-            line = line.replace("&", "and")
+        if '&' or '@' in line:
+              line = line.replace("&", "and")
+              line = line.replace("@", "at")
         converted.writelines(line)
     
     raw.close()
@@ -288,48 +289,24 @@ def convert_to_csv(file, csv_file):
         data.close()
             
     # if there are attributes, use the attributes within the tags for info
-    # else:
-
-    #         # save a list of id's to know if they are already added in
-    #         id_list = []
-    #         # loop through each <tr> in the routes
-    #         for tr in route.findall('tr'):
-    #             if tr.attrib['blockID'] not in id_list:
-    #                 # loop through each stop and add the header info to list
-    #                 for stop in tr.findall('stop'):
-    #                     bus_info = []
-    #                     bus = route.attrib['tag']
-    #                     bus_info.append(bus)
-    #                     title = route.attrib['title']
-    #                     bus_info.append(title)
-    #                     schedule = route.attrib['scheduleClass']
-    #                     bus_info.append(schedule)
-    #                     days = route.attrib['serviceClass']
-    #                     bus_info.append(days)
-    #                     direction = route.attrib['direction']
-    #                     bus_info.append(direction)
-    #                     blockID = tr.attrib['blockID']
-    #                     bus_info.append(blockID)
-    #                     id_list.append(blockID)
-    #                     stop_n = stop.attrib['tag']
-    #                     bus_info.append(stop_n)
-                        
-    #                     # loop allows for stop times to be in the correct order and row
-    #                     for second_tr in route.findall('tr'):
-    #                         if second_tr.attrib['blockID'] == tr.attrib['blockID']:
-    #                             for second_stop in second_tr.findall('stop'):
-    #                                 if second_stop.attrib['tag'] == stop.attrib['tag']:
-    #                                     bus_info.append(second_stop.text)
-                        
-    #                     # add '--' for every blank space in csv
-    #                     for i in range(30):
-    #                         bus_info.append('--')
-                            
-    #                     # append the bus_info list onto the next row in csv file
-    #                     csvwriter.writerow(bus_info)
+    else:
+        
+        # Create loop to convert file to csv -s
+        for children in root.findall(root[0].tag):
+            row = []
+            # create header for csv file
+            if header:
+                li = list(root[0].attrib.keys())
+                for key in li:
+                    item_head.append(key)
                 
-    # # Close file once written to
-    # data.close()
+                csvwriter.writerow(item_head)
+                header = False
+                    # creates a counter to count the amount of reservations today
+                counter = 0
+                
+    # Close file once written to
+    data.close()
 
 
 ######################
