@@ -220,8 +220,9 @@ def remove_errors(raw_file, final_file):
     # change the xml data to take away invalid tokens (& to and) 
     # and save to a different file
     for line in lines_of_file:
-        if '&' in line:
+        if '&' or '@' in line:
             line = line.replace("&", "and")
+            line = line.replace("@", "at")
         converted.writelines(line)
     
     raw.close()
