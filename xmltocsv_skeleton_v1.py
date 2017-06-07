@@ -14,7 +14,7 @@ import os
 ## the program is run. The actions are controlled through user input.
 
 ######################
-# Function that creates files to write parsed, converted, and logged info to
+# Function that creates files to write parsed, converted, and logged info to a local file
 
 def create_files():
     
@@ -26,7 +26,7 @@ def create_files():
         
         # User input to decide the filename, this will be based on data info
         # E.g. filename may be 'Nextbus' or 'FireIncidents' if the info regards buses/fire incidents/etc
-        filename = str(input("Desired name for output file: ")).title()
+        filename = str(input("Desired name for output file ('YOURINPUT'.xml): ")).title()
     
         # Create vars to hold the strings that will be the full filename
         # raw_file will hold the base xml data
@@ -35,9 +35,11 @@ def create_files():
         final_file = 'Converted' + filename.title().replace(" ","") + 'Data.xml'
     
         # Open files in write mode to begin use
-        xml_data = open(raw_file, "w")
-        converted_data = open(final_file, "w")
-        log_file = open("LOG: "+filename, 'w')
+        xml_data = open(raw_file, "wt")
+        converted_data = open(final_file, "wt")
+        log_file = open(filename + "Log.txt", 'wt')
+        files_written = 'The files ' +raw_file + ', ' +final_file +", and "+filename + 'Log.txt' + " were created at "+ str(current_datetime) + ".\n"
+        log_file.write(files_written)
     
         # Ask user to get data from a saved file or from a url
         file_or_url = input("Parse saved file ('f') or url data ('u'). Type 'b' to go back: ")
@@ -45,86 +47,77 @@ def create_files():
         # If the user chooses to use a saved file
         if file_or_url == 'f' or file_or_url == 'F':
             # Try to find a file with the name entered
-            # EXCEPTION HANDLING NOT FUNCTIONAL?
             try:
                 saved_filename = input("Enter the file name ('xyx.xml'): ")
             # Handle exception if the file is not found 
             except:
                 print("There is no file saved with that name.")
-                error_note = "Error: User attempted to open a file that did not exist."
-                log_file.write(error_note +'\n')
-            # Call parse_file using the entered filename, pass parameters to connect files and saved file vs url info
-            parse_file(xml_data, saved_filename, 'f')
-            success_note = 'Saved file successfully parsed to local XML file at' +raw_file +'on' +str(current_datetime) 
-            log_file.write(success_note+'\n')
+                error_note = "Error: User attempted to open a file that did not exist at" + str(current_datetime) + '.\n'
+                log_file.write(error_note)
+                
+            # Call parse_file using the entered filename
+            parse_file(xml_data, saved_filename)
+            success_note = 'Saved file successfully parsed to local XML file at ' +raw_file +' at ' +str(current_datetime) + ".\n"
+            log_file.write(success_note)
+            remove_errors()
             # CONVERT TO CSV
+            convert_to_csv()
             loop = True
+            
         # If the user chooses to parse a URL
         elif file_or_url == 'u' or file_or_url == 'U':
             # Ask user input for the URL address
             url_address = input("Enter the URL: ")
-            # Call parse_file with the URL entered
+            # Call parse_url with the URL entered
             parse_url(xml_data, url_address, 'u')
-            success_note = 'URL XML info successfully parsed to local XML file at' +raw_file +'on'+str(current_datetime)
-            log_file.write(success_note+'\n')
+            success_note = 'URL XML info successfully parsed to local XML file at' +raw_file +' at '+str(current_datetime) + ".\n"
+            log_file.write(success_note)
+            remove_errors()
             # CONVERT TO CSV
+            convert_to_csv()
             loop = True
+            
         # If the user chooses to go back -- e.g. they spelled the output file name wrong
         elif file_or_url == 'b':
             # Remove the file that was created with the wrong spelling
             os.remove(raw_file)
-            remove_note = "'Filename labeled incorrect by user. Removed files from the OS at ' +str(current_datetime)"
-            log_file.write(remove_note+'\n')
             os.remove(final_file)
+            remove_note = 'Filename labeled incorrect by user. Removed files from the OS at ' +str(current_datetime) + '.\n'
+            log_file.write(remove_note)
             # Loop back if the user chooses 'b' so they can start over
             loop = False
+            
         # If the user does not enter any of the correct commands loop back to start
         else:
             print("Error. Enter 'f' for saved file or 'u' for url data. Try again.")
             loop = False
             
     # Final success log
-    log_file.write("All files successfully created at " +str(current_datetime))
+    log_file.write("All files successfully created at " +str(current_datetime) + '.\n')
 
 
 ######################
 # Function to parse xml from saved file and write to file
 
-def parse_file(write_file, filename, x):
+def parse_file(write_file, filename):
     
     # Get current date info to use in logging
     current_datetime = datetime.datetime.now()
+    
+    # Create standard doc type var 
+    doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
+    
+    # Go ahead and write the doc type to the top of the file
+    write_file.write(doc_type)
 
-    # If the user entered f to use a saved file 
-    if x == 'f':
-        # Parse the xml file
-        tree = ET.parse(filename)
-        root = tree.getroot()
-
-        for child in root:
-            header_tag = str(child.tag)
-
-        # Create doc type and body tag vars
-        doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
-        body_tag = '<body>\n'
-        body = '</body>'
-        # Create outermost heading tag
-        heading_tag = '<'+header_tag+'>\n'
-        ending = '\n</'+header_tag+'>\n'
-
-        # Write initial doc_type, body_tag, and heading_tag
-        write_file.write(doc_type)
-        write_file.write(body_tag)
-        write_file.write(heading_tag)
-
-        # Iterate and write the child attributes
-        for child in root:
-            write_file.write(str(child.attrib))
-
-        # Write the ending tags
-        write_file.write(ending)
-        write_file.write(body)
-
+    # Open file passed into funtion and read lines
+    open_file = open(filename, 'r')
+    lines = open_file.readlines()
+    for line in lines:
+        write_file.write(line)
+        
+    # LATER Add option to compile multiple files into one
+    
 
 ######################
 # Function to parse XML info from url and write to file
@@ -203,6 +196,7 @@ def parse_url(write_file, filename, x):
                 loop = True
                 while loop == True:
                     urls = input("Add next URL (Hit enter to stop): ")
+                    
                     if urls == "":
                         loop = False
              
@@ -213,9 +207,17 @@ def parse_url(write_file, filename, x):
 
 
 ######################
+# Function to clean up errors in the XML to remove before converting to CSV
+
+def remove_errors():
+    pass
+
+
+######################
 # Function that converts to CSV
 # Pass in the file that was created
 # Open that file and read to write to CSV file
+
 def convert_to_csv():
     # Allow user to enter tag names
     pass
