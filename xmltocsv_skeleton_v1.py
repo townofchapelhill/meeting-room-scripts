@@ -33,10 +33,11 @@ def create_files():
         # final_file will hold error corrected raw_file data converted to CSV
         raw_file = 'Raw' + filename.title().replace(" ","") + 'Data.xml'
         final_file = 'Converted' + filename.title().replace(" ","") + 'Data.xml'
+        csv_file = filename.title().replace(" ","") + 'Data.csv'
     
         # Open files in write mode to begin use
         xml_data = open(raw_file, "wt")
-        converted_data = open(final_file, "wt")
+        # converted_data = open(final_file, "wt") -s
         log_file = open(filename + "Log.txt", 'wt')
         files_written = 'The files ' +raw_file + ', ' +final_file +", and "+filename + 'Log.txt' + " were created at "+ str(current_datetime) + ".\n"
         log_file.write(files_written)
@@ -57,11 +58,11 @@ def create_files():
                 
             # Call parse_file using the entered filename
             parse_file(xml_data, saved_filename)
-            success_note = 'Saved file successfully parsed to local XML file at ' +raw_file +' at ' +str(current_datetime) + ".\n"
+            success_note = 'Saved file successfully parsed to local XML file at ' + raw_file +' at ' +str(current_datetime) + ".\n"
             log_file.write(success_note)
-            remove_errors()
+            remove_errors(raw_file, final_file)
             # CONVERT TO CSV
-            convert_to_csv()
+            convert_to_csv(final_file,csv_file)
             loop = True
             
         # If the user chooses to parse a URL
@@ -72,9 +73,9 @@ def create_files():
             parse_url(xml_data, url_address)
             success_note = 'URL XML info successfully parsed to local XML file at' +raw_file +' at '+str(current_datetime) + ".\n"
             log_file.write(success_note)
-            remove_errors()
+            remove_errors(raw_file,final_file)
             # CONVERT TO CSV
-            convert_to_csv()
+            #convert_to_csv(xml_data, csv_file)
             loop = True
             
         # If the user chooses to go back -- e.g. they spelled the output file name wrong
@@ -116,7 +117,9 @@ def parse_file(write_file, filename):
     for line in lines:
         write_file.write(line)
         
+    print('The provided xml file has been copied to the raw file :)')
     # LATER Add option to compile multiple files into one
+    write_file.close()
     
 
 ######################
@@ -206,8 +209,21 @@ def parse_url(write_file, filename):
 ######################
 # Function to clean up errors in the XML to remove before converting to CSV -s
 
-def remove_errors():
-    pass
+def remove_errors(raw_file, final_file):
+    raw = open(raw_file, 'r')
+    converted = open(final_file, 'w')
+    
+    lines_of_file = raw.readlines()
+    
+    # change the xml data to take away invalid tokens (& to and) 
+    # and save to a different file
+    for line in lines_of_file:
+        if '&' in line:
+            line = line.replace("&", "and")
+        converted.writelines(line)
+    
+    raw.close()
+    converted.close()
 
 
 ######################
@@ -215,9 +231,105 @@ def remove_errors():
 # Pass in the file that was created
 # Open that file and read to write to CSV file
 
-def convert_to_csv():
+def convert_to_csv(file, csv_file):
     # Allow user to enter tag names -s
-    pass
+    # Parse the XML file createdin pass_file and combine_routes
+    tree = ET.parse(file)
+    root = tree.getroot()
+
+    # Create a CSV file in the open data unpublished folder for writing
+    data = open(csv_file, 'w')
+    # log_file.write('CSV file created.\n')
+
+    # Create the csv writer object
+    csvwriter = csv.writer(data)
+    
+    # Create empty list
+    item_head = []
+
+    # use boolean to determine header in loop
+    header = True
+    
+    # check if the xml file contains attributes with important info
+    if not list(root[0].attrib):
+        has_attr = False
+    else:
+        has_attr = True
+    
+    # if there are no attributes, use tag names as headers and column names
+    if not has_attr:
+        # Create loop to convert file to csv -s
+        for children in root.findall(root[0].tag):
+            row = []
+            # create header for csv file
+            if header:
+                # loops through each grandchild and assigns the tags as the header
+                for grandchild in root[0]:
+                    item_head.append(grandchild.tag)
+                
+                csvwriter.writerow(item_head)
+                header = False
+                    # creates a counter to count the amount of reservations today
+                counter = 0
+                # try:
+                #     log_file.write("CSV header created, adding XML data to CSV file now...\n")
+                # except:
+                #     print('ERROR - missing "logs" directory')        
+                
+            # goes through each grandchild based on the child and appends rows to csv
+            for grandchild in root[counter]:
+                row.append(grandchild.text)
+                
+            csvwriter.writerow(row)
+	   
+            # increment counter
+            counter += 1
+            
+        data.close()
+            
+    # if there are attributes, use the attributes within the tags for info
+    # else:
+
+    #         # save a list of id's to know if they are already added in
+    #         id_list = []
+    #         # loop through each <tr> in the routes
+    #         for tr in route.findall('tr'):
+    #             if tr.attrib['blockID'] not in id_list:
+    #                 # loop through each stop and add the header info to list
+    #                 for stop in tr.findall('stop'):
+    #                     bus_info = []
+    #                     bus = route.attrib['tag']
+    #                     bus_info.append(bus)
+    #                     title = route.attrib['title']
+    #                     bus_info.append(title)
+    #                     schedule = route.attrib['scheduleClass']
+    #                     bus_info.append(schedule)
+    #                     days = route.attrib['serviceClass']
+    #                     bus_info.append(days)
+    #                     direction = route.attrib['direction']
+    #                     bus_info.append(direction)
+    #                     blockID = tr.attrib['blockID']
+    #                     bus_info.append(blockID)
+    #                     id_list.append(blockID)
+    #                     stop_n = stop.attrib['tag']
+    #                     bus_info.append(stop_n)
+                        
+    #                     # loop allows for stop times to be in the correct order and row
+    #                     for second_tr in route.findall('tr'):
+    #                         if second_tr.attrib['blockID'] == tr.attrib['blockID']:
+    #                             for second_stop in second_tr.findall('stop'):
+    #                                 if second_stop.attrib['tag'] == stop.attrib['tag']:
+    #                                     bus_info.append(second_stop.text)
+                        
+    #                     # add '--' for every blank space in csv
+    #                     for i in range(30):
+    #                         bus_info.append('--')
+                            
+    #                     # append the bus_info list onto the next row in csv file
+    #                     csvwriter.writerow(bus_info)
+                
+    # # Close file once written to
+    # data.close()
 
 
 ######################
