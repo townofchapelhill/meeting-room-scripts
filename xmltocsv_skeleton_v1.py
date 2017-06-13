@@ -76,14 +76,9 @@ def create_files():
             log_file.write('URL XML info successfully parsed to local XML file at ' +raw_file +'.\n')
             # Remove xml errors
             remove_errors(raw_file,final_file)
-<<<<<<< HEAD
-            # CONVERT TO CSV
-            convert_to_csv(final_file, csv_file)
-=======
             # Convert xml to csv
             convert_to_csv(final_file, csv_file)
             log_file.write("XML successfully converted to CSV at " + csv_file + '.\n')
->>>>>>> 36a749237437314fce93467c7593e49b1bb3f85b
             loop = True
             
         # If the user chooses to go back -- e.g. they spelled the output file name wrong
@@ -226,13 +221,8 @@ def remove_errors(raw_file, final_file):
     # and save to a different file
     for line in lines_of_file:
         if '&' or '@' in line:
-<<<<<<< HEAD
-              line = line.replace("&", "and")
-              line = line.replace("@", "at")
-=======
             line = line.replace("&", "and")
             line = line.replace("@", "at")
->>>>>>> 36a749237437314fce93467c7593e49b1bb3f85b
         converted.writelines(line)
     
     raw.close()
@@ -313,8 +303,8 @@ def convert_to_csv(file, csv_file):
                 
                 csvwriter.writerow(item_head)
                 header = False
-                    # creates a counter to count the amount of reservations today
-                counter = 0
+                # creates a counter to count the amount of reservations today
+                # counter = 0
                 
     # Close file once written to
     data.close()

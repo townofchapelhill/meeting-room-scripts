@@ -133,54 +133,6 @@ def reservations_by_month():
 		
 	return count
 
-# function counts reservations since a certain amount of days
-def reservations_since(days_ago):
-	
-	weekly_monthly_data = open(usage_file, 'w')
-	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
-	body_tag = '<reservation>\n'
-	body = '</reservation>\n'
-	weekly_monthly_data.write(doc_type)
-	weekly_monthly_data.write(body_tag)
-
-	for i in range(days_ago,1):
-		
-	    url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do='+ str(i))
-	    # Read and decode the XML file found at each url
-	    decoded_url= urllib.request.urlopen(url).read().decode('utf-8')
-	    # Add each line of the XML file to the empty list
-	
-	    stripped_url_list = decoded_url[52:-14]
-	    weekly_monthly_data.write(stripped_url_list)
-	    
-	weekly_monthly_data.write(body)
-	weekly_monthly_data.close()
-	
-	my_file = open(usage_file, 'r')
-	my_file2 = open(fixed_file, 'w')
-	
-	lines_of_file = my_file.readlines()
-	
-	for line in lines_of_file:
-	    if '&amp;' in line:
-	        line = line.replace("&amp;", "and")
-	    my_file2.writelines(line)
-	
-	my_file.close()
-	my_file2.close()
-	
-	# parse the xml file
-	
-	tree = ET.parse(fixed_file)
-	root = tree.getroot()
-	
-	count = 0
-	
-	for member in root.findall('item'):
-		count += 1
-		
-	return count
-
 # function to create XML file from URL containing today's data
 def create_xml():
     # Create the variable to hold the desired write file

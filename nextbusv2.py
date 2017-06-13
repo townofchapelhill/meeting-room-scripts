@@ -147,6 +147,7 @@ def convert_to_csv():
                                 if second_stop.attrib['tag'] == stop.attrib['tag']:
                                     bus_info.append(second_stop.text)
                     
+                    # add '--' for every blank space in csv
                     for i in range(30):
                         bus_info.append('--')
                         
