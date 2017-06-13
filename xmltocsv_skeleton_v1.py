@@ -34,13 +34,15 @@ def create_files():
         raw_file = 'Raw' + filename.title().replace(" ","") + 'Data.xml'
         final_file = 'Converted' + filename.title().replace(" ","") + 'Data.xml'
         csv_file = filename.title().replace(" ","") + 'Data.csv'
+        log = filename.title().replace(" ", "") + "Log.txt"
+
     
         # Open files in write mode to begin use
         xml_data = open(raw_file, "wt")
-        # converted_data = open(final_file, "wt") -s
-        log_file = open(filename + "Log.txt", 'wt')
-        files_written = 'The files ' +raw_file + ', ' +final_file +", and "+filename + 'Log.txt' + " were created at "+ str(current_datetime) + ".\n"
-        log_file.write(files_written)
+        converted_data = open(final_file, "wt") 
+        log_file = open(log, 'wt')
+        log_file.write("Program run on " + str(current_datetime) + '.\n')
+        log_file.write('The files ' +raw_file + ', ' +final_file +", and "+filename + 'Log.txt' + " were created.\n")
     
         # Ask user to get data from a saved file or from a url
         file_or_url = input("Parse saved file ('f') or url data ('u'). Type 'b' to go back: ")
@@ -53,16 +55,16 @@ def create_files():
             # Handle exception if the file is not found 
             except:
                 print("There is no file saved with that name.")
-                error_note = "Error: User attempted to open a file that did not exist at" + str(current_datetime) + '.\n'
-                log_file.write(error_note)
+                log_file.write("Error: User attempted to open a file that did not exist.\n")
                 
             # Call parse_file using the entered filename
             parse_file(xml_data, saved_filename)
-            success_note = 'Saved file successfully parsed to local XML file at ' + raw_file +' at ' +str(current_datetime) + ".\n"
-            log_file.write(success_note)
+            log_file.write('Saved file successfully parsed to local XML file at ' + raw_file +' .\n')
+            # Remove xml errors
             remove_errors(raw_file, final_file)
-            # CONVERT TO CSV
+            # Convert xml to csv
             convert_to_csv(final_file,csv_file)
+            log_file.write("XML successfully converted to CSV at " + csv_file + '.\n')
             loop = True
             
         # If the user chooses to parse a URL
@@ -71,11 +73,17 @@ def create_files():
             url_address = input("Enter the URL: ")
             # Call parse_url with the URL entered
             parse_url(xml_data, url_address)
-            success_note = 'URL XML info successfully parsed to local XML file at' +raw_file +' at '+str(current_datetime) + ".\n"
-            log_file.write(success_note)
+            log_file.write('URL XML info successfully parsed to local XML file at ' +raw_file +'.\n')
+            # Remove xml errors
             remove_errors(raw_file,final_file)
+<<<<<<< HEAD
             # CONVERT TO CSV
             convert_to_csv(final_file, csv_file)
+=======
+            # Convert xml to csv
+            convert_to_csv(final_file, csv_file)
+            log_file.write("XML successfully converted to CSV at " + csv_file + '.\n')
+>>>>>>> 36a749237437314fce93467c7593e49b1bb3f85b
             loop = True
             
         # If the user chooses to go back -- e.g. they spelled the output file name wrong
@@ -83,8 +91,7 @@ def create_files():
             # Remove the file that was created with the wrong spelling
             os.remove(raw_file)
             os.remove(final_file)
-            remove_note = 'Filename labeled incorrect by user. Removed files from the OS at ' +str(current_datetime) + '.\n'
-            log_file.write(remove_note)
+            log_file.write('Filename labeled incorrect by user. Removed files from the OS.\n')
             # Loop back if the user chooses 'b' so they can start over
             loop = False
             
@@ -94,7 +101,7 @@ def create_files():
             loop = False
             
     # Final success log
-    log_file.write("All files successfully created at " +str(current_datetime) + '.\n')
+    log_file.write('All files successfully created.\n')
 
 
 ######################
@@ -219,8 +226,13 @@ def remove_errors(raw_file, final_file):
     # and save to a different file
     for line in lines_of_file:
         if '&' or '@' in line:
+<<<<<<< HEAD
               line = line.replace("&", "and")
               line = line.replace("@", "at")
+=======
+            line = line.replace("&", "and")
+            line = line.replace("@", "at")
+>>>>>>> 36a749237437314fce93467c7593e49b1bb3f85b
         converted.writelines(line)
     
     raw.close()
@@ -285,7 +297,6 @@ def convert_to_csv(file, csv_file):
 	   
             # increment counter
             counter += 1
-            
         data.close()
             
     # if there are attributes, use the attributes within the tags for info
