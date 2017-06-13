@@ -155,6 +155,9 @@ def create_xml():
 # main function that prints desired data and creates a csv file
 # that organizes today's reservation data
 def main():
+	week_data = reservations_by_week()
+	month_data = reservations_by_month()
+	
 	create_xml()
 	my_file = open(usage_file, 'r')
 	my_file2 = open(fixed_file, 'w')
@@ -175,19 +178,18 @@ def main():
 	root = tree.getroot()
 	
 	# create a csv file for writing
-	resident_data = open(str(today) + '-reservationsToday.csv', 'w')
+	reservation_data = open(str(today) + '-reservationsToday.csv', 'w')
 	
 	# create the csv writer object
-	csvwriter = csv.writer(resident_data)
+	csvwriter = csv.writer(reservation_data)
 	item_head = []
 	
 	header = True
 	
 	# loops through today's reservations and adds to the csv file
 	for member in root.findall('item'):
-		resident = []
-		address_list = []
-		
+		reservation_row = []
+
 		# creates the header
 		if header:
 			# loops through each grandchild and assigns the tags as the header
@@ -200,21 +202,33 @@ def main():
 		
 		# goes through each grandchild based on the child and appends rows to csv
 		for grandchild in root[counter]:
-			resident.append(grandchild.text)
+			reservation_row.append(grandchild.text)
 			
-		csvwriter.writerow(resident)
+		csvwriter.writerow(reservation_row)
 		
 		# increment counter
 		counter += 1
+	
+	stats = [counter, week_data, month_data]
+	
+	# adds usage data to the csv file
+	for i in range(len(stats)):
+		row = []
+		if i == 0:
+			row.append('Reservations today:')
+		elif i == 1:
+			row.append('Reservations this week:')
+		else:
+			row.append('Reservations this month:')
+		row.append(stats[i])
+		csvwriter.writerow(row)
 		
-	resident_data.close()
 		
+	reservation_data.close()
+	
 	# print out usage data
-	print('Reservations today:', counter)
-	# print('Reservations since last week:', reservations_since(-7))
-	# print('Reservations since last month:', reservations_since(-30))
-	# print()
-	print('Reservations this week:', reservations_by_week())
-	print('Reservations this month:', reservations_by_month())
+	# print('Reservations today:', counter)
+	# print('Reservations this week:', week_data)
+	# print('Reservations this month:', month_data)
 	
 main()
