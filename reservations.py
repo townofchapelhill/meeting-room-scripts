@@ -11,14 +11,23 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # set xml files to variables
-usage_file = str(today) + '-reservationData.xml'
-fixed_file = str(today) + '-convertedReservationData.xml'
+usage_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationData.xml'
+fixed_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/convertedReservationData.xml'
+
+# throw an error if a "/logs" directory doesn't exist
+try:
+    log_file = open('logs/' + str(today) + '-meetingslog.txt', 'w')
+except:
+    error_file = open('error.txt', 'w')
+    error_file.write('ERROR - "logs" directory not found\n')
+    error_file.close()
 
 # function counts the amount of reservations this week (Sunday to today)
 def reservations_by_week():
 	
 	# create a file that holds all xml data this week
 	weekly_monthly_data = open(usage_file, 'w')
+	log_file.write('Temporary XML file for weekly data created.\n')
 	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
 	body_tag = '<reservation>\n'
 	body = '</reservation>\n'
@@ -45,11 +54,15 @@ def reservations_by_week():
 	for day in range(sunday, 1):
 		
 		# the url uses do= to take in a date offset value
-	    url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do='+ str(day))
-	    # Read and decode the XML file found at each url
-	    decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
-	    stripped_url_list = decoded_url[52:-14]
-	    weekly_monthly_data.write(stripped_url_list)
+		url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do='+ str(day))
+		# Read and decode the XML file found at each url
+		try:
+			decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
+			stripped_url_list = decoded_url[52:-14]
+			weekly_monthly_data.write(stripped_url_list)
+			log_file.write("Day URL successfully accessed and decoded.\n")
+		except:
+			log_file.write("ERROR - URL access or decoding error\n")
 	    
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
@@ -61,11 +74,14 @@ def reservations_by_week():
 	
 	# change the week's xml data to take away invalid tokens (& to and) 
 	# and save to a different file
+	
+	log_file.write('\nRemoving invalid tokens from xml file.\n')
 	for line in lines_of_file:
 	    if '&amp;' in line:
 	        line = line.replace("&amp;", "and")
 	    my_file2.writelines(line)
 	
+	log_file.write('Temporary converted XML file created.\n')
 	my_file.close()
 	my_file2.close()
 	
@@ -78,7 +94,8 @@ def reservations_by_week():
 	# count each <item> tag in the xml file to get reservations this week
 	for member in root.findall('item'):
 		count += 1
-		
+	
+	log_file.write('\nAmount of reservations this week have been calculated.\n\n')	
 	return count
 	
 # function counts the amount of reservations this week (1st to today)
@@ -86,6 +103,7 @@ def reservations_by_month():
 	
 	# create a file that holds all xml data this week
 	weekly_monthly_data = open(usage_file, 'w')
+	log_file.write('Temporary XML file for monthly data created.\n')
 	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
 	body_tag = '<reservation>\n'
 	body = '</reservation>\n'
@@ -96,12 +114,16 @@ def reservations_by_month():
 	for day in range(1, now.day + 1):
 		
 		# the url uses ds= to take in a date in the format YYYY/MM/DD
-	    url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
-	    + '/' + str(now.month) + '/' + str(day))
-	    # Read and decode the XML file found at each url
-	    decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
-	    stripped_url_list = decoded_url[52:-14]
-	    weekly_monthly_data.write(stripped_url_list)
+		url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
+		+ '/' + str(now.month) + '/' + str(day))
+		try:
+		    # Read and decode the XML file found at each url
+			decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
+			stripped_url_list = decoded_url[52:-14]
+			weekly_monthly_data.write(stripped_url_list)
+			log_file.write("Day URL successfully accessed and decoded.\n")
+		except:
+			log_file.write("ERROR - URL access or decoding error\n")
 	    
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
@@ -111,12 +133,14 @@ def reservations_by_month():
 	
 	lines_of_file = my_file.readlines()
 	
+	log_file.write('\nRemoving invalid tokens from XML file.\n')
 	# change invalid tokens and placed converted into a new file
 	for line in lines_of_file:
 	    if '&amp;' in line:
 	        line = line.replace("&amp;", "and")
 	    my_file2.writelines(line)
 	
+	log_file.write('Temporary converted XML file created.\n')
 	my_file.close()
 	my_file2.close()
 	
@@ -130,46 +154,69 @@ def reservations_by_month():
 	# count each <item> tag to get monthly usage data
 	for member in root.findall('item'):
 		count += 1
-		
+	
+	log_file.write('\nAmount of reservations this month have been calculated.\n\n')	
 	return count
 
 # function to create XML file from URL containing today's data
 def create_xml():
-    # Create the variable to hold the desired write file
-    reservations = open(usage_file, "w")
-    # Create variables to hold the phrases we want to add to the beginning and end of new XML file
-    doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
-    body_tag = '<reservation>\n'
-    body = '</reservation>\n'
-    # Write the necessary statements to beginning of XML doc
-    reservations.write(doc_type)
-    reservations.write(body_tag)
-    url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do=0')
-    decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
-    stripped_url_list = decoded_url[52:-14]
-    reservations.write(stripped_url_list)
+	# Create the variable to hold the desired write file
+	reservations = open(usage_file, "w")
+	# Create variables to hold the phrases we want to add to the beginning and end of new XML file
+	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
+	body_tag = '<reservation>\n'
+	body = '</reservation>\n'
+	# Write the necessary statements to beginning of XML doc
+	reservations.write(doc_type)
+	reservations.write(body_tag)
+	try:
+		url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do=0')
+		decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
+		stripped_url_list = decoded_url[52:-14]
+		log_file.write("Today's URL successfully accessed and decoded")
+	except:
+		log_file.write("ERROR - URL access or decoding error\n")
+		
+	reservations.write(stripped_url_list)
     # Write the end statements desired and close the file
-    reservations.write(body)
-    reservations.close()  
+	reservations.write(body)
+	reservations.close()  
 
 # main function that prints desired data and creates a csv file
 # that organizes today's reservation data
 def main():
-	week_data = reservations_by_week()
-	month_data = reservations_by_month()
 	
-	create_xml()
+	log_file.write('Calculating reservations this week...\n')
+	try:
+		week_data = reservations_by_week()
+	except:
+		log_file.write('ERROR - there was an error in calculating the amount of reservations this week.\n')	
+	
+	log_file.write('Calculating reservations this month...\n')
+	try:
+		month_data = reservations_by_month()
+	except:
+		log_file.write('ERROR - there was an error in calculating the amount of reservations this month.\n')	
+	
+	log_file.write("Creating XML file for today's meetings.\n")
+	try:
+		create_xml()
+	except:
+	    log_file.write("ERROR - there was an error in the creating the XML file for today's reservations.\n")
+	
 	my_file = open(usage_file, 'r')
 	my_file2 = open(fixed_file, 'w')
 	
 	lines_of_file = my_file.readlines()
 	
+	log_file.write('Removing invalid tokens from XML file.\n')
 	# change invalid tokens
 	for line in lines_of_file:
 	    if '&amp;' in line:
 	        line = line.replace("&amp;", "and")
 	    my_file2.writelines(line)
 	
+	log_file.write('Converted XML file created.\n')
 	my_file.close()
 	my_file2.close()
 	
@@ -178,7 +225,8 @@ def main():
 	root = tree.getroot()
 	
 	# create a csv file for writing
-	reservation_data = open(str(today) + '-reservationsToday.csv', 'w')
+	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationsToday.csv', 'w')
+	log_file.write("\nCSV file for today's meetings created.\n")
 	
 	# create the csv writer object
 	csvwriter = csv.writer(reservation_data)
@@ -196,6 +244,7 @@ def main():
 			for grandchild in root[0]:
 				item_head.append(grandchild.tag)
 			csvwriter.writerow(item_head)
+			log_file.write("CSV header created, adding XML data to CSV file now...\n")
 			header = False
 			# creates a counter to count the amount of reservations today
 			counter = 0
@@ -208,6 +257,8 @@ def main():
 		
 		# increment counter
 		counter += 1
+		
+	log_file.write("Amount of reservations today calculated.\n\n")
 	
 	stats = [counter, week_data, month_data]
 	
@@ -226,9 +277,13 @@ def main():
 		
 	reservation_data.close()
 	
+	log_file.write("Today's reservation data and usage data has been written to a CSV file.\n\n")
+	
 	# print out usage data
 	# print('Reservations today:', counter)
 	# print('Reservations this week:', week_data)
 	# print('Reservations this month:', month_data)
 	
 main()
+log_file.write(str(now))
+log_file.close()

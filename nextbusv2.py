@@ -14,7 +14,7 @@ try:
     log_file = open('logs/' + str(today) + '-log.txt', 'w')
 except:
     error_file = open('error.txt', 'w')
-    error_file.write('ERROR - "logs" directory not found')
+    error_file.write('ERROR - "logs" directory not found\n')
     error_file.close()
     
 # Define function to combine the XML files at each url
@@ -41,7 +41,7 @@ def combine_routes(filename):
             decoded_route = urllib.request.urlopen(url).read().decode('utf-8')
             log_file.write(x + " route URL successfully accessed and decoded.\n")
         except:
-            log_file.write("ERROR - URL access or decoding error")
+            log_file.write("ERROR - URL access or decoding error\n")
         # Add each line of the XML file to the empty list
         for line in decoded_route:
             blank_list.append(line)
@@ -114,7 +114,7 @@ def convert_to_csv():
             try:
                 log_file.write("CSV header created, adding XML data to CSV file now...\n")
             except:
-                print('ERROR - missing "logs" directory')        
+                print('ERROR - missing "logs" directory\n')        
 
         # save a list of id's to know if they are already added in
         id_list = []
@@ -169,7 +169,7 @@ def main():
         # Print success statement
         log_file.write("All routes from XML successfully written to a CSV file - nextbusroutes.csv\n\n")
     except:
-        log_file.write("ERROR - there was an error in the conversion process of the xml file.")
+        log_file.write("ERROR - there was an error in the conversion process of the xml file.\n")
 
 # print error to console - missing "source folder" directory
 try:  
@@ -178,6 +178,6 @@ try:
     log_file.close()
     print('done')
 except:
-    log_file.write('ERROR - source folder for xml and csv files not found.')
+    log_file.write('ERROR - source folder for xml and csv files not found.\n')
     print('error - no src')
     log_file.close()
