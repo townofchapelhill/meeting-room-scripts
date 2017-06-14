@@ -11,7 +11,7 @@ bus_file = "//CHFS/Shared Documents/OpenData/datasets/unpublished/nextbusroutes.
 
 # throw an error if a "/logs" directory doesn't exist
 try:
-    log_file = open('logs/' + str(today) + '-log.txt', 'w')
+    log_file = open('logs/' + str(today) + '-nextbuslog.txt', 'w')
 except:
     error_file = open('error.txt', 'w')
     error_file.write('ERROR - "logs" directory not found\n')

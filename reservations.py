@@ -284,6 +284,11 @@ def main():
 	# print('Reservations this week:', week_data)
 	# print('Reservations this month:', month_data)
 	
-main()
-log_file.write(str(now))
-log_file.close()
+try:
+	main()
+	log_file.write(str(now))
+	log_file.close()
+except:
+    log_file.write('\nERROR - source folder for xml and csv files not found.\n')
+    print('error - no src')
+    log_file.close()
