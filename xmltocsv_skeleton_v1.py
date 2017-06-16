@@ -38,11 +38,11 @@ def create_files():
 
     
         # Open files in write mode to begin use
-        xml_data = open(raw_file, "wt")
-        converted_data = open(final_file, "wt") 
-        log_file = open(log, 'wt')
-        log_file.write("Program run on " + str(current_datetime) + '.\n')
-        log_file.write('The files ' +raw_file + ', ' +final_file +", and "+filename + 'Log.txt' + " were created.\n")
+        xml_data = open(raw_file, "w")
+        converted_data = open(final_file, "w") 
+        log_file = open(log, 'a')
+        log_file.write("\n" + "Program run on " + str(current_datetime) + '.\n')
+        log_file.write('The files ' +raw_file + ', ' +final_file +", and "+ log + " were created.\n")
     
         # Ask user to get data from a saved file or from a url
         file_or_url = input("Parse saved file ('f') or url data ('u'). Type 'b' to go back: ")
@@ -50,15 +50,10 @@ def create_files():
         # If the user chooses to use a saved file
         if file_or_url == 'f' or file_or_url == 'F':
             # Try to find a file with the name entered
-            try:
-                saved_filename = input("Enter the file name ('xyx.xml'): ")
-            # Handle exception if the file is not found 
-            except:
-                print("There is no file saved with that name.")
-                log_file.write("Error: User attempted to open a file that did not exist.\n")
-                
+            saved_filename = input("Enter the file name ('xyx.xml'): ")
+
             # Call parse_file using the entered filename
-            parse_file(xml_data, saved_filename)
+            parse_file(xml_data, saved_filename, log_file)
             log_file.write('Saved file successfully parsed to local XML file at ' + raw_file +' .\n')
             # Remove xml errors
             remove_errors(raw_file, final_file)
@@ -96,13 +91,13 @@ def create_files():
             loop = False
             
     # Final success log
-    log_file.write('All files successfully created.\n')
+    log_file.write('All files successfully created.' + '\n')
 
 
 ######################
 # Function to parse xml from saved file and write to file
 
-def parse_file(write_file, filename):
+def parse_file(write_file, filename, log_file):
     
     # Get current date info to use in logging
     current_datetime = datetime.datetime.now()
@@ -114,15 +109,20 @@ def parse_file(write_file, filename):
     write_file.write(doc_type)
 
     # Open file passed into funtion and read lines
-    open_file = open(filename, 'r')
-    lines = open_file.readlines()
-    for line in lines:
-        write_file.write(line)
+    try:
+        open_file = open(filename, 'r')
+        lines = open_file.readlines()
+        for line in lines:
+            write_file.write(line)
+            
+        print('The provided xml file has been copied to the raw file :)')
+        # LATER Add option to compile multiple files into one
+        write_file.close()
+    # Handle error in opening wrong saved file
+    except FileNotFoundError: 
+        log_file.write("Error: User attempted to open a file that did not exist.\n")
+
         
-    print('The provided xml file has been copied to the raw file :)')
-    # LATER Add option to compile multiple files into one
-    write_file.close()
-    
 
 ######################
 # Function to parse XML info from url and write to file
@@ -188,7 +188,7 @@ def parse_url(write_file, filename):
             # Write the stripped list to the file
             write_file.write("".join(stripped_list))   
             # Print for user 
-            print("The URL has been decoded and written as a URL file.")
+            print("The URL has been decoded and written as an XML file.")
             # Close the written file 
             write_file.close()
         
@@ -319,5 +319,4 @@ def main():
 
 ######################
 # Call main to run program
-
 main()
