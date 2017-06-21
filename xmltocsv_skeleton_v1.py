@@ -116,8 +116,23 @@ def parse_file(write_file, filename, log_file):
             write_file.write(line)
             
         print('The provided xml file has been copied to the raw file :)')
+        
+        x_or_y = True 
+        while x_or_y == True: 
+            another_file = input("Add another file ('X') or continue ('Y')?: ")
+            if another_file == 'y' or another_file == 'Y':
+                        write_file.close()
+                        x_or_y = False
+            elif another_file == 'x' or another_file == 'X':
+                new_filename = input('Enter the filename: ')
+                open(write_file, 'a')
+                parse_file(write_file, log_file, new_filename)
+                write_file.close()
+                x_or_y = False
+            else: 
+                x_or_y = True
+            
         # LATER Add option to compile multiple files into one
-        write_file.close()
     # Handle error in opening wrong saved file
     except FileNotFoundError: 
         log_file.write("Error: User attempted to open a file that did not exist.\n")
