@@ -1,10 +1,8 @@
-# NOTE: generally converts XML to CSV IF grandchildren of root are going to be
-# the headers of the csv file and children separate the rows
-
 import xml.etree.ElementTree as ET
 import urllib.request
 import csv
 import datetime
+import calendar
 
 # set the date with and without time to variables
 now = datetime.datetime.now()
@@ -98,7 +96,7 @@ def reservations_by_week():
 	log_file.write('\nAmount of reservations this week have been calculated.\n\n')	
 	return count
 	
-# function counts the amount of reservations this week (1st to today)
+# function counts the amount of reservations this month (1st to today)
 def reservations_by_month():
 	
 	# create a file that holds all xml data this week
@@ -158,6 +156,67 @@ def reservations_by_month():
 	log_file.write('\nAmount of reservations this month have been calculated.\n\n')	
 	return count
 
+# function counts the amount of reservations this year
+def reservations_by_year():
+	
+	# create a file that holds all xml data this week
+	weekly_monthly_data = open(usage_file, 'w')
+	log_file.write('Temporary XML file for monthly data created.\n')
+	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
+	body_tag = '<reservation>\n'
+	body = '</reservation>\n'
+	weekly_monthly_data.write(doc_type)
+	weekly_monthly_data.write(body_tag)
+
+	# loop through XML URLs from the first of the month to today
+	for month in range(1, now.month):
+		for day in range(1, calendar.monthrange(now.year,month)[1]):
+			
+			# the url uses ds= to take in a date in the format YYYY/MM/DD
+			url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
+			+ '/' + str(now.month) + '/' + str(day))
+			try:
+			    # Read and decode the XML file found at each url
+				decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
+				stripped_url_list = decoded_url[52:-14]
+				weekly_monthly_data.write(stripped_url_list)
+				log_file.write("Day URL successfully accessed and decoded.\n")
+			except:
+				log_file.write("ERROR - URL access or decoding error\n")
+	    
+	weekly_monthly_data.write(body)
+	weekly_monthly_data.close()
+	
+	my_file = open(usage_file, 'r')
+	my_file2 = open(fixed_file, 'w')
+	
+	lines_of_file = my_file.readlines()
+	
+	log_file.write('\nRemoving invalid tokens from XML file.\n')
+	# change invalid tokens and placed converted into a new file
+	for line in lines_of_file:
+	    if '&amp;' in line:
+	        line = line.replace("&amp;", "and")
+	    my_file2.writelines(line)
+	
+	log_file.write('Temporary converted XML file created.\n')
+	my_file.close()
+	my_file2.close()
+	
+	# parse the xml file
+	
+	tree = ET.parse(fixed_file)
+	root = tree.getroot()
+	
+	count = 0
+	
+	# count each <item> tag to get monthly usage data
+	for member in root.findall('item'):
+		count += 1
+	
+	log_file.write('\nAmount of reservations this year have been calculated.\n\n')	
+	return count
+	
 # function to create XML file from URL containing today's data
 def create_xml():
 	# Create the variable to hold the desired write file
@@ -185,19 +244,27 @@ def create_xml():
 # main function that prints desired data and creates a csv file
 # that organizes today's reservation data
 def main():
-	
+	# calculate weekly
 	log_file.write('Calculating reservations this week...\n')
 	try:
 		week_data = reservations_by_week()
 	except:
 		log_file.write('ERROR - there was an error in calculating the amount of reservations this week.\n')	
 	
+	# calcuate monthly
 	log_file.write('Calculating reservations this month...\n')
 	try:
 		month_data = reservations_by_month()
 	except:
 		log_file.write('ERROR - there was an error in calculating the amount of reservations this month.\n')	
 	
+	# calculate yearly
+	log_file.write('Calculating reservations this year...\n')
+	try:
+		year_data = reservations_by_year() + month_data
+	except:
+		log_file.write('ERROR - there was an error in calculating the amount of reservations this year.\n')	
+
 	log_file.write("Creating XML file for today's meetings.\n")
 	try:
 		create_xml()
@@ -260,7 +327,7 @@ def main():
 		
 	log_file.write("Amount of reservations today calculated.\n\n")
 	
-	stats = [counter, week_data, month_data]
+	stats = [counter, week_data, month_data, year_data]
 	
 	# adds usage data to the csv file
 	for i in range(len(stats)):
@@ -269,8 +336,10 @@ def main():
 			row.append('Reservations today:')
 		elif i == 1:
 			row.append('Reservations this week:')
-		else:
+		elif i == 2:
 			row.append('Reservations this month:')
+		else:
+			row.append('Reservations this year:')
 		row.append(stats[i])
 		csvwriter.writerow(row)
 		
@@ -283,6 +352,7 @@ def main():
 	# print('Reservations today:', counter)
 	# print('Reservations this week:', week_data)
 	# print('Reservations this month:', month_data)
+	#print("Reservations this year: ", year_data)
 	
 try:
 	main()
