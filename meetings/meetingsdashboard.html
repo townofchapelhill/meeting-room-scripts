@@ -28,27 +28,31 @@
         <script>
             // gets local json file
             /*global $*/
-            $.getJSON("meetings.json", function(meeting){
+            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=0f36dcd81171f4408301b87c9afc8f8e1294f744eafa61a0dbda3ea4&callback=?", function(meeting){
                 var lengthOfMeeting = meeting.records.length;
                 // displays today's date and the daily, weekly, and monthly usage data
                 $('#a').append(meeting.records[0].fields.date+'<br>');
-                $('#b').append(meeting.records[lengthOfMeeting-3].fields.date+ " " + meeting.records[lengthOfMeeting-3].fields.time+'<br>');
-                $('#b').append(meeting.records[lengthOfMeeting-2].fields.date+ " " + meeting.records[lengthOfMeeting-2].fields.time+'<br>');
-                $('#b').append(meeting.records[lengthOfMeeting-1].fields.date+ " " + meeting.records[lengthOfMeeting-1].fields.time+'<br>');
+                // $('#b').append(meeting.records[lengthOfMeeting-3].fields.date+ " " + meeting.records[lengthOfMeeting-3].fields.time+'<br>');
+                // $('#b').append(meeting.records[lengthOfMeeting-2].fields.date+ " " + meeting.records[lengthOfMeeting-2].fields.time+'<br>');
+                // $('#b').append(meeting.records[lengthOfMeeting-1].fields.date+ " " + meeting.records[lengthOfMeeting-1].fields.time+'<br>');
                 
                 // loops through file and adds a row of data to the table after each iteration
-                for (var i = 0; i < meeting.records.length-3; i++) {
+                for (var i = 0; i < meeting.records.length; i++) {
                     var record = meeting.records[i];
-                    var row = [];
-                    row.push("<tr>");
-                    row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
-                    row.push("<td>" + record.fields.description + "</td>");
-                    row.push("<td>" + record.fields.location + "</td>");
-                    row.push("<td>"+ record.fields.library + "</td>");
-                    row.push("<td>" + record.fields.status + "</td>");
-                    row.push("</tr>");
-                    row.join('');
-                    $('.table').append(row);
+                    if(record.fields.status == "Approved"){
+                        var row = [];
+                        row.push("<tr>");
+                        row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
+                        row.push("<td>" + record.fields.description + "</td>");
+                        row.push("<td>" + record.fields.location + "</td>");
+                        row.push("<td>"+ record.fields.library + "</td>");
+                        row.push("<td>" + record.fields.status + "</td>");
+                        row.push("</tr>");
+                        row.join('');
+                        $('.table').append(row);
+                    }else{
+                        $('#b').append(record.fields.date+ " " + record.fields.time+'<br>');
+                    }
                 }
             });
         </script>
