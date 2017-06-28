@@ -13,7 +13,7 @@ fixed_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/convertedcum
 
 # throw an error if a "/logs" directory doesn't exist
 try:
-    log_file = open('logs/' + str(today) + '-meetingslog.txt', 'w')
+    log_file = open('logs/cumulativeMeetingsLog.txt', 'w')
 except:
     error_file = open('error.txt', 'w')
     error_file.write('ERROR - "logs" directory not found\n')
@@ -21,15 +21,40 @@ except:
 	
 # function to create XML file from URL containing today's data
 def create_xml():
+	
+	# ~ 
+	reservations = open(usage_file, "r")
+	converted = open(fixed_file, "w")
+	
+	lines = reservations.readlines()
+	
+	for line in lines:
+	    pass
+	
+	last = line
+
+	for line in lines:
+	    if line == last:
+	        converted.write(last[:-15])
+	    else:
+	        converted.write(line)
+	
+	reservations.close()
+	converted.close()
+	        
 	# Create the variable to hold the desired write file
-	reservations = open(usage_file, "w")
+	# reservations = open(usage_file, "w")
+	
+	# ~
+	reservations = open(fixed_file, "a")
+	
 	# Create variables to hold the phrases we want to add to the beginning and end of new XML file
-	doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
-	body_tag = '<reservation>\n'
+	# doc_type = '<?xml version="1.0" encoding="utf-8" ?>\n'
+	# body_tag = '<reservation>\n'
 	body = '</reservation>\n'
 	# Write the necessary statements to beginning of XML doc
-	reservations.write(doc_type)
-	reservations.write(body_tag)
+	# reservations.write(doc_type)
+	# reservations.write(body_tag)
 	try:
 		url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do=0')
 		decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
@@ -38,7 +63,7 @@ def create_xml():
 	except:
 		log_file.write("ERROR - URL access or decoding error\n")
 		
-	reservations.write(stripped_url_list)
+	reservations.write(stripped_url_list + '\n')
     # Write the end statements desired and close the file
 	reservations.write(body)
 	reservations.close()  
@@ -53,8 +78,12 @@ def main():
 	except:
 	    log_file.write("ERROR - there was an error in the creating the XML file for today's reservations.\n")
 	
-	my_file = open(usage_file, 'r')
-	my_file2 = open(fixed_file, 'w')
+	# ~
+	my_file = open(fixed_file, 'r')
+	my_file2 = open(usage_file, 'w')
+	
+	# my_file = open(usage_file, 'r')
+	# my_file2 = open(fixed_file, 'w')
 	
 	lines_of_file = my_file.readlines()
 	
@@ -70,11 +99,16 @@ def main():
 	my_file2.close()
 	
 	# parse the xml file
-	tree = ET.parse(fixed_file)
-	root = tree.getroot()
+	try:
+		tree = ET.parse(fixed_file)
+		root = tree.getroot()
+	except:
+		log_file.write('ERROR - XML parsing error')
+		print('error - XML parsing error')
+		log_file.close()
 	
 	# create a csv file for writing
-	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/cumulreservationsToday.csv', 'a')
+	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/cumulreservationsToday.csv', 'w')
 	log_file.write("\nCSV file for today's meetings created.\n")
 	
 	# create the csv writer object
