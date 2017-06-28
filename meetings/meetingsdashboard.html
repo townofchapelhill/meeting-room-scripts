@@ -28,14 +28,11 @@
         <script>
             // gets local json file
             /*global $*/
-            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=0f36dcd81171f4408301b87c9afc8f8e1294f744eafa61a0dbda3ea4&callback=?", function(meeting){
+            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=e6a247a4d0e970bf4c1ef3ea773b15137c7e3aa7da153dd50f3d9d52&callback=?", function(meeting){
                 var lengthOfMeeting = meeting.records.length;
                 // displays today's date and the daily, weekly, and monthly usage data
                 $('#a').append(meeting.records[0].fields.date+'<br>');
-                // $('#b').append(meeting.records[lengthOfMeeting-3].fields.date+ " " + meeting.records[lengthOfMeeting-3].fields.time+'<br>');
-                // $('#b').append(meeting.records[lengthOfMeeting-2].fields.date+ " " + meeting.records[lengthOfMeeting-2].fields.time+'<br>');
-                // $('#b').append(meeting.records[lengthOfMeeting-1].fields.date+ " " + meeting.records[lengthOfMeeting-1].fields.time+'<br>');
-                
+
                 // loops through file and adds a row of data to the table after each iteration
                 for (var i = 0; i < meeting.records.length; i++) {
                     var record = meeting.records[i];
