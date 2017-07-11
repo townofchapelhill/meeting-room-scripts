@@ -174,7 +174,7 @@ def reservations_by_year():
 			
 			# the url uses ds= to take in a date in the format YYYY/MM/DD
 			url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
-			+ '/' + str(now.month) + '/' + str(day))
+			+ '/' + str(month) + '/' + str(day))
 			try:
 			    # Read and decode the XML file found at each url
 				decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
@@ -236,7 +236,7 @@ def create_xml():
 	except:
 		log_file.write("ERROR - URL access or decoding error\n")
 		
-	reservations.write(stripped_url_list)
+	reservations.write(stripped_url_list + '\n')
     # Write the end statements desired and close the file
 	reservations.write(body)
 	reservations.close()  
