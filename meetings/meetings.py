@@ -232,7 +232,7 @@ def create_xml():
 		url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do=0')
 		decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
 		stripped_url_list = decoded_url[52:-14]
-		log_file.write("Today's URL successfully accessed and decoded")
+		log_file.write("Today's URL successfully accessed and decoded\n")
 	except:
 		log_file.write("ERROR - URL access or decoding error\n")
 		
