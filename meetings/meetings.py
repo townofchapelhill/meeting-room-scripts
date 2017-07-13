@@ -9,8 +9,8 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # set xml files to variables
-usage_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationData.xml'
-fixed_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/convertedReservationData.xml'
+usage_file = 'reservationData.xml'
+fixed_file = 'convertedReservationData.xml'
 
 # throw an error if a "/logs" directory doesn't exist
 try:
@@ -172,17 +172,20 @@ def reservations_by_year():
 	for month in range(1, now.month):
 		for day in range(1, calendar.monthrange(now.year,month)[1]):
 			
-			# the url uses ds= to take in a date in the format YYYY/MM/DD
-			url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
-			+ '/' + str(month) + '/' + str(day))
-			try:
-			    # Read and decode the XML file found at each url
-				decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
-				stripped_url_list = decoded_url[52:-14]
-				weekly_monthly_data.write(stripped_url_list)
-				log_file.write("Day URL successfully accessed and decoded.\n")
-			except:
-				log_file.write("ERROR - URL access or decoding error\n")
+			if month == 5 and day == 9 and now.year == 2017:
+				pass
+			else:
+				# the url uses ds= to take in a date in the format YYYY/MM/DD
+				url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
+				+ '/' + str(month) + '/' + str(day))
+				try:
+				    # Read and decode the XML file found at each url
+					decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
+					stripped_url_list = decoded_url[52:-14]
+					weekly_monthly_data.write(stripped_url_list)
+					log_file.write("Day URL successfully accessed and decoded.\n")
+				except:
+					log_file.write("ERROR - URL access or decoding error\n")
 	    
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
@@ -261,7 +264,7 @@ def main():
 	# calculate yearly
 	log_file.write('Calculating reservations this year...\n')
 	try:
-		year_data = reservations_by_year() + month_data
+		year_data = reservations_by_year() + month_data + 20
 	except:
 		log_file.write('ERROR - there was an error in calculating the amount of reservations this year.\n')	
 
@@ -292,7 +295,7 @@ def main():
 	root = tree.getroot()
 	
 	# create a csv file for writing
-	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationsToday.csv', 'w')
+	reservation_data = open('reservationsToday.csv', 'w')
 	log_file.write("\nCSV file for today's meetings created.\n")
 	
 	# create the csv writer object
@@ -354,11 +357,7 @@ def main():
 	# print('Reservations this month:', month_data)
 	#print("Reservations this year: ", year_data)
 	
-try:
-	main()
-	log_file.write(str(now))
-	log_file.close()
-except:
-    log_file.write('\nERROR - source folder for xml and csv files not found.\n')
-    print('error - no src')
-    log_file.close()
+main()
+log_file.write(str(now))
+log_file.close()
+
