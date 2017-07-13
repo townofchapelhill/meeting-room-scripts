@@ -147,14 +147,38 @@ def reservations_by_month():
 	tree = ET.parse(fixed_file)
 	root = tree.getroot()
 	
+	# initialize counters
 	count = 0
+	room_a = 0
+	room_b = 0
+	room_c = 0
+	room_d = 0
+	dml1 = 0
+	dml2 = 0
+	dmls = 0
 	
 	# count each <item> tag to get monthly usage data
-	for member in root.findall('item'):
+	# count each instance of each room usage
+	for items in root.findall('item'):
 		count += 1
+		for locations in items.findall('location'):
+			if locations.text == 'Meeting Room A':
+			    room_a += 1
+			elif locations.text == 'Meeting Room B':
+			    room_b += 1
+			elif locations.text == 'Meeting Room C':
+			    room_c += 1
+			elif locations.text == 'Meeting Room D':
+			    room_d += 1
+			elif locations.text == 'Digital Media Lab Workstation 1':
+			    dml1 += 1
+			elif locations.text == 'Digital Media Lab Workstation 2':
+			    dml2 += 1
+			elif locations.text == 'Digital Media Lab Studio':
+			    dmls += 1
 	
 	log_file.write('\nAmount of reservations this month have been calculated.\n\n')	
-	return count
+	return count,room_a,room_b,room_c,room_d,dml1,dml2,dmls
 
 # function counts the amount of reservations this year
 def reservations_by_year():
@@ -257,7 +281,7 @@ def main():
 	# calcuate monthly
 	log_file.write('Calculating reservations this month...\n')
 	try:
-		month_data = reservations_by_month()
+		month_data, a, b, c, d, dl1, dl2, dls = reservations_by_month()
 	except:
 		log_file.write('ERROR - there was an error in calculating the amount of reservations this month.\n')	
 	
@@ -345,17 +369,28 @@ def main():
 			row.append('Reservations this year:')
 		row.append(stats[i])
 		csvwriter.writerow(row)
-		
-		
+	
+	# calculate monthly percentages and append to csv
+	row_a = ['Meeting Room A:', round(a/month_data * 100,2), '%']
+	row_b = ['Meeting Room B:', round(b/month_data * 100,2), '%']
+	row_c = ['Meeting Room C:', round(c/month_data * 100,2), '%']
+	row_d = ['Meeting Room D:', round(d/month_data * 100,2), '%'] 
+	row_dl1 = ['Digital Media Lab Workstation 1:', round(dl1/month_data * 100,2), '%']
+	row_dl2 = ['Digital Media Lab Workstation 2:', round(dl2/month_data * 100,2), '%']
+	row_dls = ['Digital Media Lab Studio:', round(dls/month_data * 100,2), '%']
+	
+	csvwriter.writerow(row_a)
+	csvwriter.writerow(row_b)
+	csvwriter.writerow(row_c)
+	csvwriter.writerow(row_d)
+	csvwriter.writerow(row_dl1)
+	csvwriter.writerow(row_dl2)
+	csvwriter.writerow(row_dls)
+
+	
 	reservation_data.close()
 	
 	log_file.write("Today's reservation data and usage data has been written to a CSV file.\n\n")
-	
-	# print out usage data
-	# print('Reservations today:', counter)
-	# print('Reservations this week:', week_data)
-	# print('Reservations this month:', month_data)
-	#print("Reservations this year: ", year_data)
 	
 main()
 log_file.write(str(now))
