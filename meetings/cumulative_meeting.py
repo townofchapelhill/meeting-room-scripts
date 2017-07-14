@@ -59,11 +59,12 @@ def create_xml():
 		url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do=0')
 		decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
 		stripped_url_list = decoded_url[52:-14]
-		log_file.write("Today's URL successfully accessed and decoded")
+		log_file.write("Today's URL successfully accessed and decoded.\n")
 	except:
 		log_file.write("ERROR - URL access or decoding error\n")
 		
 	reservations.write(stripped_url_list + '\n')
+	log_file.write("Today's reservation data has been appended to a cumulative XML file for conversion to CSV.\n")
     # Write the end statements desired and close the file
 	reservations.write(body)
 	reservations.close()  
@@ -141,20 +142,10 @@ def main():
 		# increment counter
 		counter += 1
 		
-	log_file.write("Amount of reservations today calculated.\n\n")
-	
 	reservation_data.close()
 	
-	log_file.write("Today's reservation data and usage data has been written to a CSV file.\n\n")
-	
-	# print out usage data
-	print('Reservations today:', counter)
-	
-try:
-	main()
-	log_file.write(str(now))
-	log_file.close()
-except:
-    log_file.write('\nERROR - source folder for xml and csv files not found.\n')
-    print('error - no src')
-    log_file.close()
+	log_file.write("Today's reservation data has been appended to the cumulative CSV file.\n\n")
+
+main()
+log_file.write(str(now))
+log_file.close()
