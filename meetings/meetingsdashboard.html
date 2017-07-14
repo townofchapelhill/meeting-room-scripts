@@ -6,7 +6,10 @@
     
     <body>
         <h1 align='center'> Meeting Room Data </h1>
+        <h3 style="margin-left:5em"> Usage Data </h3>
         <p style="margin-left:6em" id=b><br></p>
+        <h3 style="margin-left:5em"> Monthly Utilization Data </h3>
+        <p style="margin-left:6em" id=c></p>
         <h2 id=a align='center'></h2>
         <!-- create a table with appropriate headers-->
         <table class="table" align='center'>
@@ -47,8 +50,10 @@
                         row.push("</tr>");
                         row.join('');
                         $('.table').append(row);
+                    }else if(record.fields.enddate == '%'){
+                        $('#c').append(record.fields.date + " " + record.fields.time + '%<br>');
                     }else{
-                        $('#b').append(record.fields.date+ " " + record.fields.time+'<br>');
+                        $('#b').append(record.fields.date + " " + record.fields.time + '<br>');
                     }
                 }
             });
