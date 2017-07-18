@@ -8,7 +8,7 @@
         <h1 align='center'> Meeting Room Data </h1>
         <h3 style="margin-left:5em"> Usage Data </h3>
         <p style="margin-left:6em" id=b></p><br>
-        <h3 style="margin-left:5em"> Monthly Utilization Data </h3>
+        <h3 style="margin-left:5em"> Monthly Popularity Data </h3>
         <p style="margin-left:6em" id=c></p><br>
         <h2 id=a align='center'></h2>
         <!-- create a table with appropriate headers-->
@@ -55,7 +55,7 @@
                             $('#a').append(record.fields.date + '<br>');
                             title = false
                         }
-                    // monthly utilization data
+                    // monthly popularity data
                     }else if(record.fields.enddate == '%'){
                         $('#c').append(record.fields.date + " " + record.fields.time + '%<br>');
                     // usage data
