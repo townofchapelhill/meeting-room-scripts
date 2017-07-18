@@ -39,21 +39,26 @@
                 // loops through file and adds a row of data to the table after each iteration
                 for (var i = 0; i < meeting.records.length; i++) {
                     var record = meeting.records[i];
+                    var time = record.fields.time.split(' ')
                     // meeting room info and title
                     if(record.fields.status == "Approved" || record.fields.status == "Pending"){
-                        var row = [];
-                        row.push("<tr>");
-                        row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
-                        row.push("<td>" + record.fields.description + "</td>");
-                        row.push("<td>" + record.fields.location + "</td>");
-                        row.push("<td>"+ record.fields.library + "</td>");
-                        row.push("<td>" + record.fields.status + "</td>");
-                        row.push("</tr>");
-                        row.join('');
-                        $('.table').append(row);
-                        if(title){
-                            $('#a').append(record.fields.date + '<br>');
-                            title = false
+                        if(time[1] == 'AM' || time[0].split(':')[0] == '12'){
+                            var row = [];
+                            row.push("<tr>");
+                            row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
+                            row.push("<td>" + record.fields.description + "</td>");
+                            row.push("<td>" + record.fields.location + "</td>");
+                            row.push("<td>"+ record.fields.library + "</td>");
+                            row.push("<td>" + record.fields.status + "</td>");
+                            row.push("</tr>");
+                            row.join('');
+                            $('.table').append(row);
+                            if(title){
+                                $('#a').append(record.fields.date + '<br>');
+                                title = false
+                            }
+                        }else{
+                            continue;
                         }
                     // monthly popularity data
                     }else if(record.fields.enddate == '%'){
@@ -62,6 +67,29 @@
                     }else{
                         $('#b').append(record.fields.date + " " + record.fields.time + '<br>');
                     }
+                }
+                
+                for (var i = 0; i < meeting.records.length; i++) {
+                    var record = meeting.records[i];
+                    var time = record.fields.time.split(' ')
+                    if(time[1] == 'PM' && time[0].split(':')[0] != '12'){
+                        var row = [];
+                            row.push("<tr>");
+                            row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
+                            row.push("<td>" + record.fields.description + "</td>");
+                            row.push("<td>" + record.fields.location + "</td>");
+                            row.push("<td>"+ record.fields.library + "</td>");
+                            row.push("<td>" + record.fields.status + "</td>");
+                            row.push("</tr>");
+                            row.join('');
+                            $('.table').append(row);
+                            if(title){
+                                $('#a').append(record.fields.date + '<br>');
+                                title = false
+                            }
+                        }else{
+                            continue;
+                        }
                 }
             });
         </script>
