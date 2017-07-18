@@ -33,12 +33,13 @@
             /*global $*/
             $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=e6a247a4d0e970bf4c1ef3ea773b15137c7e3aa7da153dd50f3d9d52&callback=?", function(meeting){
                 var lengthOfMeeting = meeting.records.length;
-                // displays today's date and the daily, weekly, and monthly usage data
-                $('#a').append(meeting.records[0].fields.date+'<br>');
-
+                // initialize a variable to display the title (today's date) at the top
+                var title = true
+                
                 // loops through file and adds a row of data to the table after each iteration
                 for (var i = 0; i < meeting.records.length; i++) {
                     var record = meeting.records[i];
+                    // meeting room info and title
                     if(record.fields.status == "Approved" || record.fields.status == "Pending"){
                         var row = [];
                         row.push("<tr>");
@@ -50,8 +51,14 @@
                         row.push("</tr>");
                         row.join('');
                         $('.table').append(row);
+                        if(title){
+                            $('#a').append(record.fields.date + '<br>');
+                            title = false
+                        }
+                    // monthly utilization data
                     }else if(record.fields.enddate == '%'){
                         $('#c').append(record.fields.date + " " + record.fields.time + '%<br>');
+                    // usage data
                     }else{
                         $('#b').append(record.fields.date + " " + record.fields.time + '<br>');
                     }
