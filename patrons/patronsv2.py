@@ -28,6 +28,7 @@ def update_patrons():
         if request.status_code != 200:
             break
         elif i != 0:
+            # adds a comma and newline for better organization and format
             patrons.write(',\n')
         
         # counter looks for slice start point
@@ -40,14 +41,14 @@ def update_patrons():
         # slice off the beginning and ends of json to allow for combining all data
         sliced_json = request.text[counter:-2]
             
-        # append data to patron json file and add a newline each iteration for better organization
+        # append data to patron json file
         patrons.write(sliced_json)
         
         # increment i by 2000 for the next 2000 records
         i += 2000
     
 # open a json file & write a header
-patrons = open('patrons.json', 'w')
+patrons = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/patrons.json', 'w')
 patrons.write('{ "entries": [ \n')
 
 # call update function
