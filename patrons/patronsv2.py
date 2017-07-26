@@ -2,7 +2,7 @@
 import requests
 import json
 
-# function that gets the authentication token]
+# function that gets the authentication token
 def get_token():
     url = "https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/token"
     header = {"Authorization": "Basic NVZuT3lhZXltczdUWUFsWnJnVDQrV0MyK2ZaUDpyRjBpaUBDVyF0bThMTGw4", "Content-Type": "application/x-www-form-urlencoded"}
@@ -17,7 +17,7 @@ def update_patrons():
     i = 0
     while True:
         
-        print(i) # for testing purposes
+        # print(i) # for testing purposes
         
         # set request variable equal to URI at i's index, showing fields: createdDate, names, barcodes, expirationDate and deleted is false
         request = requests.get("https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/patrons?offset=" + str(i) + "&limit=2000&fields=createdDate,names,barcodes,expirationDate&deleted=false", headers={
@@ -26,26 +26,34 @@ def update_patrons():
     
         # stop looping when the requests sends an error code (reached current patron data)
         if request.status_code != 200:
-            return False
+            break
+        elif i != 0:
+            patrons.write(',\n')
         
+        # counter looks for slice start point
+        counter = 1
+        for letter in request.text:
+            if letter == '[':
+                break
+            counter += 1
+
         # slice off the beginning and ends of json to allow for combining all data
-        sliced_json = request.text[38:-2]
-    
+        sliced_json = request.text[counter:-2]
+            
         # append data to patron json file and add a newline each iteration for better organization
-        patrons.write(sliced_json + ",\n")
+        patrons.write(sliced_json)
         
         # increment i by 2000 for the next 2000 records
         i += 2000
     
-    return True
+# open a json file & write a header
+patrons = open('patrons.json', 'w')
+patrons.write('{ "entries": [ \n')
 
-# open a json file
-patrons = open('patrons.json', 'a')
+# call update function
+update_patrons()
 
-# if update is successful, close file
-if update_patrons() == True:
-    # brackets signal end of file
-    patrons.write(']}')
-    patrons.close()
-else:
-    print("done")
+# brackets signal end of file
+patrons.write(']}')
+patrons.close()
+print("done")
