@@ -16,10 +16,12 @@ def get_token():
     token = json_response["access_token"]
     return token
 
-def create_csv(x):
+# function that creates a csv file and adds on expired patron's names, addresses, emails, and exp. date
+def create_csv(writer):
+    # first id is 100010
     id = 100010
-    exp_counter = 0
-    
+
+    # loop until there are no more patron records (error code 200)
     while True:
         
         url = "https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/patrons?limit=2000&deleted=false&fields=expirationDate,addresses,names,emails&id=["+str(id)+",]"
@@ -28,10 +30,9 @@ def create_csv(x):
                 })
                 
         if request.status_code != 200:
-            return exp_counter
+            break
                 
         jfile= json.loads(request.text)
-        
         
         for entry in jfile["entries"]:
             try:
@@ -46,8 +47,7 @@ def create_csv(x):
                     row.append(entry["addresses"][0]['lines'])
                     row.append(entry["emails"][0])
                     row.append(entry["expirationDate"])
-                    x.writerow(row)
-                    exp_counter += 1
+                    writer.writerow(row)
             except KeyError:
                 continue
         
@@ -55,8 +55,15 @@ def create_csv(x):
         
         print(id)
         
-patron_activity = open('expired_patrons.csv', 'w')
-csvwriter = csv.writer(patron_activity)
+# open csv file for writing
+expired_patrons = open('expired_patrons.csv', 'w')
+
+# create a csvwriter object
+csvwriter = csv.writer(expired_patrons)
+
+# write a header & call the create_csv function
 csvwriter.writerow(['names','addresses','emails','expirationDate'])
-csvwriter.writerow(['expired cards:', create_csv(csvwriter)])
-patron_activity.close()
+create_csv(csvwriter)
+
+# close file
+expired_patrons.close()
