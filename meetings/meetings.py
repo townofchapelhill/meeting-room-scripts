@@ -75,8 +75,9 @@ def reservations_by_week():
 	
 	log_file.write('\nRemoving invalid tokens from xml file.\n')
 	for line in lines_of_file:
-	    if '&amp;' in line:
+	    if '&amp;' or '&' in line:
 	        line = line.replace("&amp;", "and")
+	        line = line.replace("&", "and")
 	    my_file2.writelines(line)
 	
 	log_file.write('Temporary converted XML file created.\n')
@@ -134,8 +135,9 @@ def reservations_by_month():
 	log_file.write('\nRemoving invalid tokens from XML file.\n')
 	# change invalid tokens and placed converted into a new file
 	for line in lines_of_file:
-	    if '&amp;' in line:
+	    if '&amp;' or '&' in line:
 	        line = line.replace("&amp;", "and")
+	        line = line.replace("&", "and")
 	    my_file2.writelines(line)
 	
 	log_file.write('Temporary converted XML file created.\n')
@@ -222,8 +224,9 @@ def reservations_by_year():
 	log_file.write('\nRemoving invalid tokens from XML file.\n')
 	# change invalid tokens and placed converted into a new file
 	for line in lines_of_file:
-	    if '&amp;' in line:
+	    if '&amp;' or '&' in line:
 	        line = line.replace("&amp;", "and")
+	        line = line.replace("&", "and")
 	    my_file2.writelines(line)
 	
 	log_file.write('Temporary converted XML file created.\n')
@@ -306,8 +309,9 @@ def main():
 	log_file.write('Removing invalid tokens from XML file.\n')
 	# change invalid tokens
 	for line in lines_of_file:
-	    if '&amp;' in line:
+	    if '&amp;' or '&' in line:
 	        line = line.replace("&amp;", "and")
+	        line = line.replace("&", "and")
 	    my_file2.writelines(line)
 	
 	log_file.write('Converted XML file created.\n')

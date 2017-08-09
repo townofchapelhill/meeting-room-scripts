@@ -91,9 +91,9 @@ def main():
 	log_file.write('Removing invalid tokens from XML file.\n')
 	# change invalid tokens
 	for line in lines_of_file:
-	    if '&amp;' in line:
-	        line = line.replace("&amp;", "and")
-	    my_file2.writelines(line)
+		if '&' in line:
+			line = line.replace("&", "and")
+		my_file2.writelines(line)
 	
 	log_file.write('Converted XML file created.\n')
 	my_file.close()
@@ -101,7 +101,7 @@ def main():
 	
 	# parse the xml file
 	try:
-		tree = ET.parse(fixed_file)
+		tree = ET.parse(usage_file)
 		root = tree.getroot()
 	except:
 		log_file.write('ERROR - XML parsing error')
