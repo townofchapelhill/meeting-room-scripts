@@ -9,8 +9,8 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # set xml files to variables
-usage_file = 'reservationData.xml'
-fixed_file = 'convertedReservationData.xml'
+usage_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationData.xml'
+fixed_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/convertedReservationData.xml'
 
 # throw an error if a "/logs" directory doesn't exist
 try:
@@ -319,7 +319,7 @@ def main():
 	root = tree.getroot()
 	
 	# create a csv file for writing
-	reservation_data = open('reservationsToday.csv', 'w')
+	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationsToday.csv', 'w')
 	log_file.write("\nCSV file for today's meetings created.\n")
 	
 	# create the csv writer object
