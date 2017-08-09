@@ -9,8 +9,8 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # set xml files to variables
-usage_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationData.xml'
-fixed_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/convertedReservationData.xml'
+usage_file = 'reservationData.xml'
+fixed_file = 'convertedReservationData.xml'
 
 # throw an error if a "/logs" directory doesn't exist
 try:
@@ -196,7 +196,7 @@ def reservations_by_year():
 	for month in range(1, now.month):
 		for day in range(1, calendar.monthrange(now.year,month)[1]):
 			
-			if month == 5 and day == 9 and now.year == 2017:
+			if ((month == 5 and day == 9 and now.year == 2017) or (month == 8 and day == 7 and now.year == 2017)):
 				pass
 			else:
 				# the url uses ds= to take in a date in the format YYYY/MM/DD
@@ -288,7 +288,7 @@ def main():
 	# calculate yearly
 	log_file.write('Calculating reservations this year...\n')
 	try:
-		year_data = reservations_by_year() + month_data + 20
+		year_data = reservations_by_year() + month_data + 34
 	except:
 		log_file.write('ERROR - there was an error in calculating the amount of reservations this year.\n')	
 
@@ -319,7 +319,7 @@ def main():
 	root = tree.getroot()
 	
 	# create a csv file for writing
-	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/reservationsToday.csv', 'w')
+	reservation_data = open('reservationsToday.csv', 'w')
 	log_file.write("\nCSV file for today's meetings created.\n")
 	
 	# create the csv writer object
