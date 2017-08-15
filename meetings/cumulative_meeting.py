@@ -8,8 +8,8 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # set xml files to variables
-usage_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/cumulreservationData.xml'
-fixed_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/convertedcumulReservationData.xml'
+usage_file = 'cumulreservationData.xml'
+fixed_file = 'convertedcumulReservationData.xml'
 
 # throw an error if a "/logs" directory doesn't exist
 try:
@@ -18,6 +18,10 @@ except:
     error_file = open('error.txt', 'w')
     error_file.write('ERROR - "logs" directory not found\n')
     error_file.close()
+
+# function checks if string is an ascii
+def is_ascii(s):
+	return all(ord(c) < 128 for c in s)
 	
 # function to create XML file from URL containing today's data
 def create_xml():
@@ -91,8 +95,15 @@ def main():
 	log_file.write('Removing invalid tokens from XML file.\n')
 	# change invalid tokens
 	for line in lines_of_file:
-		if '&' in line:
-			line = line.replace("&", "and")
+		if is_ascii(line):
+			if '&' in line:
+				line = line.replace('&', 'and')
+		else:
+			for char in line:
+				if is_ascii(char):
+					continue
+				else:
+					line = line.replace(char, '?')
 		my_file2.writelines(line)
 	
 	log_file.write('Converted XML file created.\n')
@@ -100,16 +111,16 @@ def main():
 	my_file2.close()
 	
 	# parse the xml file
-	try:
-		tree = ET.parse(usage_file)
-		root = tree.getroot()
-	except:
-		log_file.write('ERROR - XML parsing error')
-		print('error - XML parsing error')
-		log_file.close()
+	# try:
+	tree = ET.parse(usage_file)
+	root = tree.getroot()
+# except:
+	# 	log_file.write('ERROR - XML parsing error')
+	# 	print('error - XML parsing error')
+	# 	log_file.close()
 	
 	# create a csv file for writing
-	reservation_data = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/cumulreservationsToday.csv', 'w')
+	reservation_data = open('cumulreservationsToday.csv', 'w')
 	log_file.write("\nCSV file for today's meetings created.\n")
 	
 	# create the csv writer object
