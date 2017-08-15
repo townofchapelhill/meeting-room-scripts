@@ -20,6 +20,11 @@ except:
     error_file.write('ERROR - "logs" directory not found\n')
     error_file.close()
 
+
+# function checks if a string is an ASCII (english characters only)
+def is_ascii(s):
+	return all(ord(c) < 128 for c in s)
+	
 # function counts the amount of reservations this week (Sunday to today)
 def reservations_by_week():
 	
@@ -70,15 +75,21 @@ def reservations_by_week():
 	
 	lines_of_file = my_file.readlines()
 	
-	# change the week's xml data to take away invalid tokens (& to and) 
+	# change the week's xml data to take away invalid tokens 
 	# and save to a different file
 	
 	log_file.write('\nRemoving invalid tokens from xml file.\n')
+	
 	for line in lines_of_file:
-	    if '&amp;' or '&' in line:
-	        line = line.replace("&amp;", "and")
-	        line = line.replace("&", "and")
-	    my_file2.writelines(line)
+		if is_ascii(line):
+			pass
+		else:
+			for char in line:
+				if is_ascii(char):
+					continue
+				else:
+					line = line.replace(char, '?')
+		my_file2.writelines(line)
 	
 	log_file.write('Temporary converted XML file created.\n')
 	my_file.close()
@@ -134,11 +145,17 @@ def reservations_by_month():
 	
 	log_file.write('\nRemoving invalid tokens from XML file.\n')
 	# change invalid tokens and placed converted into a new file
+	
 	for line in lines_of_file:
-	    if '&amp;' or '&' in line:
-	        line = line.replace("&amp;", "and")
-	        line = line.replace("&", "and")
-	    my_file2.writelines(line)
+		if is_ascii(line):
+			pass
+		else:
+			for char in line:
+				if is_ascii(char):
+					continue
+				else:
+					line = line.replace(char, '?')
+		my_file2.writelines(line)
 	
 	log_file.write('Temporary converted XML file created.\n')
 	my_file.close()
@@ -198,20 +215,17 @@ def reservations_by_year():
 	for month in range(1, now.month):
 		for day in range(1, calendar.monthrange(now.year,month)[1]):
 			
-			if ((month == 5 and day == 9 and now.year == 2017) or (month == 8 and day == 7 and now.year == 2017)):
-				pass
-			else:
-				# the url uses ds= to take in a date in the format YYYY/MM/DD
-				url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
-				+ '/' + str(month) + '/' + str(day))
-				try:
-				    # Read and decode the XML file found at each url
-					decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
-					stripped_url_list = decoded_url[52:-14]
-					weekly_monthly_data.write(stripped_url_list)
-					log_file.write("Day URL successfully accessed and decoded.\n")
-				except:
-					log_file.write("ERROR - URL access or decoding error\n")
+			# the url uses ds= to take in a date in the format YYYY/MM/DD
+			url = ('http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&ds='+ str(now.year) \
+			+ '/' + str(month) + '/' + str(day))
+			try:
+			    # Read and decode the XML file found at each url
+				decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
+				stripped_url_list = decoded_url[52:-14]
+				weekly_monthly_data.write(stripped_url_list)
+				log_file.write("Day URL successfully accessed and decoded.\n")
+			except:
+				log_file.write("ERROR - URL access or decoding error\n")
 	    
 	weekly_monthly_data.write(body)
 	weekly_monthly_data.close()
@@ -224,10 +238,15 @@ def reservations_by_year():
 	log_file.write('\nRemoving invalid tokens from XML file.\n')
 	# change invalid tokens and placed converted into a new file
 	for line in lines_of_file:
-	    if '&amp;' or '&' in line:
-	        line = line.replace("&amp;", "and")
-	        line = line.replace("&", "and")
-	    my_file2.writelines(line)
+		if is_ascii(line):
+			pass
+		else:
+			for char in line:
+				if is_ascii(char):
+					continue
+				else:
+					line = line.replace(char, '?')
+		my_file2.writelines(line)
 	
 	log_file.write('Temporary converted XML file created.\n')
 	my_file.close()
@@ -291,7 +310,7 @@ def main():
 	# calculate yearly
 	log_file.write('Calculating reservations this year...\n')
 	try:
-		year_data = reservations_by_year() + month_data + 34
+		year_data = reservations_by_year() + month_data
 	except:
 		log_file.write('ERROR - there was an error in calculating the amount of reservations this year.\n')	
 
@@ -309,10 +328,15 @@ def main():
 	log_file.write('Removing invalid tokens from XML file.\n')
 	# change invalid tokens
 	for line in lines_of_file:
-	    if '&amp;' or '&' in line:
-	        line = line.replace("&amp;", "and")
-	        line = line.replace("&", "and")
-	    my_file2.writelines(line)
+		if is_ascii(line):
+			pass
+		else:
+			for char in line:
+				if is_ascii(char):
+					continue
+				else:
+					line = line.replace(char, '?')
+		my_file2.writelines(line)
 	
 	log_file.write('Converted XML file created.\n')
 	my_file.close()
