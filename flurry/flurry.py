@@ -1,22 +1,38 @@
 # Import libraries to request REST api
 import requests
 import json
+import datetime
+import os
 
 # Access specific flurry query, pass header authentication, store data in var
 def get_flurry():
     
-    json_file = open("flurry.json", "w")
+    # Create var to put data in unpublished directory
+    unpublished_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/flurry.csv'
+
+    # Find date and create vars to hold the span of one day 
+    now = str(datetime.date.today())
+    one_day_ago = str(datetime.date.today() - datetime.timedelta(days=1))
+    date_string = one_day_ago + "/" + now
     
-    # Static URL, needs to be made able to be modified on a weekly, monthly, x basis based on timestamps
-    url = "https://api-metrics.flurry.com/public/v1/data/appUsage/week/company/app/language?metrics=sessions,activeDevices,newDevices,timeSpent,averageTimePerDevice,averageTimePerSession&dateTime=2017-07-03/2017-07-10"
+    # Flurry API call, date string is updated to cover daily stats
+    url = "https://api-metrics.flurry.com/public/v1/data/appUsage/day/company/app/language?metrics=sessions,activeDevices,newDevices,timeSpent,averageTimePerDevice,averageTimePerSession&dateTime=" + date_string
     headers = {"Authorization":"Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImZsdXJyeS56dXVsLnByb2Qua2V5c3RvcmUua2V5LjIifQ.eyJpc3MiOiJodHRwczovL3p1dWwuZmx1cnJ5LmNvbTo0NDMvdG9rZW4iLCJpYXQiOjE0OTg2NzI5MjAsImV4cCI6MzMwNTU1ODE3MjAsInN1YiI6IjM5Njk2MiIsImF1ZCI6IjQiLCJ0eXBlIjo0LCJqdGkiOiIxNjQwIn0.TEfZiAbxbODOqVbwdAHkrHlvvJaiEaZCEbH0hOkBKsY"}
     data = requests.get(url,headers=headers).json()
     data_list = data["rows"]
     
-    # Testing purposes
-    flurrycsv = open("flurry.csv", "w")
+    # Open the file to write/append to 
+    flurrycsv = open(unpublished_file, "a")
+    
+    # Write CSV headings if the file is empty
+    if os.stat("flurry.csv").st_size == 0:
+        flurrycsv.write("Company Name, Average Time Per Session, Active Devices, Language, Time Spent, Sessions, Date and Time, Average Time Per Device, App Name, New Devices"+"\n")
+    
+    # Set counter
     i = 0
-    flurrycsv.write("Company Name, Average Time Per Session, Active Devices, Language, Time Spent, Sessions, Date and Time, Average Time Per Device, App Name, New Devices"+"\n")
+
+    # Write/append the data to the file once the headings have been added
+    # Write in CSV format for ease of use (since I'm not very familiar with json format)
     while i < len(data_list):
         flurrycsv.write(data_list[i]['company|name'] + ", ")
         flurrycsv.write(str(data_list[i]['averageTimePerSession'])+ ", ")
@@ -30,10 +46,6 @@ def get_flurry():
         flurrycsv.write(str(data_list[i]['newDevices']))
         flurrycsv.write("\n")
         i += 1    
-   
-# Update the file with new data on weekly, monthly, x basis
-def update_file():
-    pass
 
 # Main function
 def main():
