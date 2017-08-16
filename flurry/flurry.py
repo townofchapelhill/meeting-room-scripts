@@ -1,8 +1,10 @@
-# Import libraries to request REST api
+# Import required libraries 
 import requests
 import json
 import datetime
 import os
+# Import API secrets file
+import secrets 
 
 # Access specific flurry query, pass header authentication, store data in var
 def get_flurry():
@@ -17,7 +19,8 @@ def get_flurry():
     
     # Flurry API call, date string is updated to cover daily stats
     url = "https://api-metrics.flurry.com/public/v1/data/appUsage/day/company/app/language?metrics=sessions,activeDevices,newDevices,timeSpent,averageTimePerDevice,averageTimePerSession&dateTime=" + date_string
-    headers = {"Authorization":"Bearer eyJhbGciOiJIUzI1NiIsImtpZCI6ImZsdXJyeS56dXVsLnByb2Qua2V5c3RvcmUua2V5LjIifQ.eyJpc3MiOiJodHRwczovL3p1dWwuZmx1cnJ5LmNvbTo0NDMvdG9rZW4iLCJpYXQiOjE0OTg2NzI5MjAsImV4cCI6MzMwNTU1ODE3MjAsInN1YiI6IjM5Njk2MiIsImF1ZCI6IjQiLCJ0eXBlIjo0LCJqdGkiOiIxNjQwIn0.TEfZiAbxbODOqVbwdAHkrHlvvJaiEaZCEbH0hOkBKsY"}
+    # Take API token from separate file
+    headers = {"Authorization":"Bearer " + str(secrets.flurry_api_token)}
     data = requests.get(url,headers=headers).json()
     data_list = data["rows"]
     
