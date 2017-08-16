@@ -15,13 +15,14 @@ def get_token():
 def update_patrons():
     # loop through each URI, incrementing by the limit of 2,000 until all patron data accessed
     i = 0
+    token = get_token()
     while True:
         
         # print(i) # for testing purposes
         
         # set request variable equal to URI at i's index, showing fields: createdDate, names, barcodes, expirationDate and deleted is false
         request = requests.get("https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/patrons?offset=" + str(i) + "&limit=2000&fields=createdDate,names,barcodes,expirationDate&deleted=false", headers={
-            "Authorization": "Bearer " + get_token()
+            "Authorization": "Bearer " + token
         })
     
         # stop looping when the requests sends an error code (reached current patron data)
