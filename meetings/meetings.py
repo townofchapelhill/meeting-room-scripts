@@ -422,6 +422,6 @@ def main():
 	log_file.write("Today's reservation data and usage data has been written to a CSV file.\n\n")
 	
 main()
-log_file.write(str(now))
+log_file.write(str(datetime.datetime.now()))
 log_file.close()
 
