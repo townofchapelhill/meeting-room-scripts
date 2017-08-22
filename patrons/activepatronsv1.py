@@ -2,6 +2,7 @@
 # Import required library for accessing Sierra with authorization
 import requests
 import datetime
+import secrets
 
 # Open file to write to and file to append to in future
 patrons = open('patrons.json', 'w')
@@ -19,9 +20,9 @@ date_range = "[" + str(old_date_string) + "," + str(present_date_string) + "]"
 print(date_range)
 
 # Save header in var, change api key as needed (for now)
-header_text = {"Authorization": "Bearer HdNUe1KU1fv8Tc7P2Gay8enHs1XDK5Nrgsjyj0AsbZVPM5x7Rnn-o0_biWY4qZvF09EvkP1WOVU2I9rx_-028RwWh_dkSNFhCN9nXaTdTkfpzcWR1leiNaS1Uq1uyAdPfa4SvKDBKXa62MRGhwIXocmDPW_6pNyaB5hDcqCk1M0"}
+header_text = {"Authorization": "Bearer " + str(secrets.active_patrons_apin)}
 
-# Set looping vars
+Set looping vars
 i = 0
 loop=True
 
