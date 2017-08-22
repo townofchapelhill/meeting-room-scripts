@@ -3,6 +3,7 @@
 import requests
 import datetime
 import secrets
+import json
 
 # Open file to write to and file to append to in future
 patrons = open('patrons.json', 'w')
@@ -16,11 +17,15 @@ one_year_ago = str(datetime.date.today() - datetime.timedelta(days=365))
 old_date_string = one_year_ago + str("T00:00:00Z")
 date_range = "[" + str(old_date_string) + "," + str(present_date_string) + "]"
 
-# Testing
-print(date_range)
+# copy Steven
+url = "https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/token"
+header = {"Authorization": "Basic " + str(secrets.active_patrons_static_key), "Content-Type": "application/x-www-form-urlencoded"}
+response = requests.post(url, headers=header)
+json_response = json.loads(response.text)
+active_patrons_token = json_response["access_token"]
 
 # Save header in var, change api key as needed (for now)
-header_text = {"Authorization": "Bearer " + str(secrets.active_patrons_api)}
+header_text = {"Authorization": "Bearer " + active_patrons_token}
 
 # Set looping vars
 i = 0
@@ -40,7 +45,7 @@ while loop == True:
         break
     
     # Counter to find slice start point 
-    # © Steven for this bit of code
+    # copy Steven for this bit of code
     counter = 1
     for letter in request.text:
         if letter == '[':
