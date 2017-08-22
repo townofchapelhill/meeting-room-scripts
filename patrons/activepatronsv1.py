@@ -20,9 +20,9 @@ date_range = "[" + str(old_date_string) + "," + str(present_date_string) + "]"
 print(date_range)
 
 # Save header in var, change api key as needed (for now)
-header_text = {"Authorization": "Bearer " + str(secrets.active_patrons_apin)}
+header_text = {"Authorization": "Bearer " + str(secrets.active_patrons_api)}
 
-Set looping vars
+# Set looping vars
 i = 0
 loop=True
 
