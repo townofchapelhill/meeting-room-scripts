@@ -1,11 +1,12 @@
 # import required library for accessing Sierra with authorization
 import requests
 import json
+import secrets
 
 # function that gets the authentication token
 def get_token():
     url = "https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/token"
-    header = {"Authorization": "Basic NVZuT3lhZXltczdUWUFsWnJnVDQrV0MyK2ZaUDpyRjBpaUBDVyF0bThMTGw4", "Content-Type": "application/x-www-form-urlencoded"}
+    header = {"Authorization": "Basic " + str(secrets.sierra_api), "Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(url, headers=header)
     json_response = json.loads(response.text)
     token = json_response["access_token"]
