@@ -36,19 +36,21 @@
         </div>
         <br><br><br>
         
+        <script type="text/javascript" src="secrets.js"></script>
         <script>
             // gets local json files
             /*global $*/
-            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patron-dashboard&rows=1", function(exp_patron){
+            /*global ODS_api*/
+            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patron-dashboard&rows=1&apikey=" + ODS_api + "&callback=?", function(exp_patron){
                 var amount_exp = exp_patron.nhits
-                $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patrons&rows=1&apikey=?&callback=?", function(all_patrons){
+                $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patrons&rows=1&apikey=" + ODS_api + "&callback=?", function(all_patrons){
                     var amount_total = all_patrons.nhits;
                     $('#b').append(amount_exp);
                     $('#c').append((amount_exp/amount_total * 100).toFixed(2) + '%');
                 });
             });
             
-            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patron-dashboard&rows=10000&sort=expirationdate&apikey=?&callback=?", function(exp_patrons){
+            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patron-dashboard&rows=10000&sort=expirationdate&apikey=" + ODS_api + "&callback=?", function(exp_patrons){
                 for(var i = 0; i < exp_patrons.records.length; i++) {
                     var patron = exp_patrons.records[i];
                     var row = []

@@ -41,10 +41,12 @@
         </div>
         <br><br><br>
         
-        <script>
+        <script type="text/javascript" src="secrets.js"></script> 
+        <script type="text/javascript">
             // gets local json file
             /*global $*/
-            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=?&callback=?", function(meeting){
+            /*global ODS_api*/
+            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=" + ODS_api + "&callback=?", function(meeting){
                 var lengthOfMeeting = meeting.records.length;
                 // initialize a variable to display the title (today's date) at the top
                 var title = true
