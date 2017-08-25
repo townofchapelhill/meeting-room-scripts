@@ -7,16 +7,7 @@
     </head>
     
     <body>
-        <div class="container">
-            <h1 align='center'> Expired Library Cards </h1> 
-            <div class="row">
-                <div class="col-lg-8">
-                    <h5 id=b>Total: </h5>
-                    <h5 id=c>Percent Expired: </h5>
-                </div>
-            </div>
-        </div>
-        <h2 id=a align='center'>Patrons page 1</h2>
+        <h2 id=a align='center'>Patrons page 4<br></h2>
         <!-- create a table with appropriate headers-->
         <div class="container">
             <div class="table-responsive">
@@ -41,17 +32,10 @@
             // gets local json files
             /*global $*/
             /*global ODS_api*/
-            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patron-dashboard&rows=1&apikey=" + ODS_api + "&callback=?", function(exp_patron){
-                var amount_exp = exp_patron.nhits
-                $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patrons&rows=1&apikey=" + ODS_api + "&callback=?", function(all_patrons){
-                    var amount_total = all_patrons.nhits;
-                    $('#b').append(amount_exp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                    $('#c').append((amount_exp/amount_total * 100).toFixed(2) + '%');
-                });
-            });
             
             $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/download/?dataset=patron-dashboard&sort=expirationdate&format=json&apikey=" + ODS_api + "&callback=?", function(exp_patrons){
-                for(var i = 0; i < 5000; i++) {
+                //alert(exp_patrons.length);
+                for(var i = 15000; i < 20000; i++) {
                     var patron = exp_patrons[i].fields;
                     var row = []
                     row.push()
