@@ -57,7 +57,7 @@ def create_csv(writer):
         print(id)
         
 # open csv file for writing
-expired_patrons = open('expired_patrons.csv', 'w')
+expired_patrons = open('//CHFS/Shared Documents/OpenData/datasets/unpublished/expired_patrons.csv', 'w')
 
 # create a csvwriter object
 csvwriter = csv.writer(expired_patrons)
