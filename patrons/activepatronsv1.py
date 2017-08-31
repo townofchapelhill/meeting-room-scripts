@@ -1,65 +1,97 @@
-
-# Import required library for accessing Sierra with authorization
 import requests
 import datetime
-import secrets
 import json
+import csv
+import traceback
+# Import secrets file
+import secrets
 
-# Open file to write to and file to append to in future
-patrons = open('patrons.json', 'w')
-patrons_append = open('updatedpatrons.json', 'a')
-patrons.write('{ "entries": [')
 
-# Create date range to use in api call for active users
-now = str(datetime.date.today())
-present_date_string = now + str("T00:00:00Z")
-one_year_ago = str(datetime.date.today() - datetime.timedelta(days=365))
-old_date_string = one_year_ago + str("T00:00:00Z")
-date_range = "[" + str(old_date_string) + "," + str(present_date_string) + "]"
+# Function to create the save file vars
+def create_save_files():
+    # Link to CHFS directory
+    unpublished_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/activepatrons.json'
+    # Open file to write
+    patrons = open("activepatrons.json", 'w')
+    return patrons
 
-# copy Steven
-url = "https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/token"
-header = {"Authorization": "Basic " + str(secrets.active_patrons_static_key), "Content-Type": "application/x-www-form-urlencoded"}
-response = requests.post(url, headers=header)
-json_response = json.loads(response.text)
-active_patrons_token = json_response["access_token"]
+# Function to get the date
+def get_date():
+    now = str(datetime.date.today())
+    # Add string to date to fix sierra syntax
+    present_date_string = now + str("T00:00:00Z")
+    # Get the date from a year ago and create string
+    one_year_ago = str(datetime.date.today() - datetime.timedelta(days=365))
+    old_date_string = one_year_ago + str("T00:00:00Z")
+    # Create a date range string that fits into the api call format
+    date_range = "[" + str(old_date_string) + "," + str(present_date_string) + "]"
+    return date_range
 
-# Save header in var, change api key as needed (for now)
-header_text = {"Authorization": "Bearer " + active_patrons_token}
+# Function to get the API token, via code Steven created
+def get_token():
+    url = "https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v3/token"
+    # Get the API key from secrets.py
+    header = {"Authorization": "Basic " + str(secrets.sierra_api), "Content-Type": "application/x-www-form-urlencoded"}
+    response = requests.post(url, headers=header)
+    json_response = json.loads(response.text)
+    # Create var to hold the response data
+    active_patrons_token = json_response["access_token"]
+    return active_patrons_token
 
-# Set looping vars
-i = 0
-loop=True
-
-# Loop goes through records up to i
-while loop == True:
+# Function to fetch the data and write to file
+def fetch_data():
     
-    # Request the api data at url
-    request = requests.get("https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v4/patrons/?limit=2000&offset=" + str(i) + "&fields=updatedDate&updatedDate=" + str(date_range), headers=header_text)
+    patrons = create_save_files()
+    date_range = get_date()
     
-    # Testing
-    print(i)
+    patrons.write('{ "entries": [')
     
-    # Stop looping when the requests sends an error code/doesn't connect
-    if request.status_code != 200:
-        break
+    # Save header in var, change api key as needed (for now)
+    header_text = {"Authorization": "Bearer " + get_token()}
     
-    # Counter to find slice start point 
-    # copy Steven for this bit of code
-    counter = 1
-    for letter in request.text:
-        if letter == '[':
+    # Set looping vars
+    i = 0
+    loop=True
+    
+    # Loop goes through records up to i
+    while loop == True:
+        
+        # Request the api data at url
+        request = requests.get("https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v4/patrons/?limit=2000&offset=" + str(i) + "&fields=updatedDate&updatedDate=" + str(date_range), headers=header_text)
+        
+        # Testing
+        # print(i)
+        
+        # Stop looping when the requests sends an error code/doesn't connect
+        if request.status_code != 200:
             break
-        counter += 1
-
-    # Slice off the beginning and ends of json to allow for combining all data
-    sliced_json = request.text[counter:-2]
-
-    # Write data to patron json file 
-    patrons.write(sliced_json + ",\n")
+        
+        # Counter to find slice start point 
+        # copy Steven for this bit of code
+        counter = 1
+        for letter in request.text:
+            if letter == '[':
+                break
+            counter += 1
     
-    # Increment i 
-    i = i + 2000
+        # Slice off the beginning and ends of json to allow for combining all data
+        sliced_json = request.text[counter:-2]
+        encoded_json = sliced_json.encode('utf-8')
     
-# Write to end of file 
-patrons.write(']}')
+        # Write data to patron json file 
+        patrons.write(encoded_json + ",\n")
+        
+        # Increment i 
+        i = i + 2000
+        
+    patrons.write(']}')
+    
+
+# Main function, call fetch_data()        
+def main(): 
+    errors = open("error.txt", "w")
+    try:
+        fetch_data()
+    except Exception as exc:
+        errors.write(traceback.format_exc())
+main()
