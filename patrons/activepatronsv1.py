@@ -44,27 +44,30 @@ def fetch_data():
     patrons = create_save_files()
     date_range = get_date()
     
-    patrons.write('{ "entries": [')
+    patrons.write('{ "entries": [ \n')
     
     # Save header in var, change api key as needed (for now)
     header_text = {"Authorization": "Bearer " + get_token()}
-    
+
     # Set looping vars
     i = 0
     loop=True
     
     # Loop goes through records up to i
     while loop == True:
-        
+        print("loop")
         # Request the api data at url
         request = requests.get("https://catalog.chapelhillpubliclibrary.org/iii/sierra-api/v4/patrons/?limit=2000&offset=" + str(i) + "&fields=updatedDate&updatedDate=" + str(date_range), headers=header_text)
         
         # Testing
-        # print(i)
+        print(i)
         
         # Stop looping when the requests sends an error code/doesn't connect
         if request.status_code != 200:
             break
+        elif i != 0:
+            # adds a comma and newline for better organization and format
+            patrons.write(',\n')
         
         # Counter to find slice start point 
         # copy Steven for this bit of code
@@ -73,14 +76,13 @@ def fetch_data():
             if letter == '[':
                 break
             counter += 1
+            
     
         # Slice off the beginning and ends of json to allow for combining all data
         sliced_json = request.text[counter:-2]
-        encoded_json = sliced_json.encode('utf-8')
-    
+
         # Write data to patron json file 
-        patrons.write(encoded_json + ",\n")
-        
+        patrons.write(sliced_json)
         # Increment i 
         i = i + 2000
         
@@ -89,7 +91,7 @@ def fetch_data():
 
 # Main function, call fetch_data()        
 def main(): 
-    errors = open("error.txt", "w")
+    errors = open("activepatrons_error_log.txt", "w")
     try:
         fetch_data()
     except Exception as exc:
