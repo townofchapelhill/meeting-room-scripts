@@ -1,39 +1,52 @@
 <html>
     
     <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     
     <body>
-        <h1 align='center'> Meeting Room Data </h1>
-        <h3 style="margin-left:5em"> Usage Data </h3>
-        <p style="margin-left:6em" id=b></p><br>
-        <h3 style="margin-left:5em"> Monthly Popularity Data </h3>
-        <p style="margin-left:6em" id=c></p><br>
+        <div class="container">
+            <h1 align='center'> Meeting Room Data </h1> 
+            <div class="row">
+                <div class="col-lg-8">
+                    <h3> Usage Data </h3>
+                    <p id=b></p><br>
+                </div>
+                <div class="col-lg-4">
+                    <h3> Monthly Popularity Data </h3>
+                    <p id=c></p><br>
+                </div>
+            </div>
+        </div>
         <h2 id=a align='center'></h2>
         <!-- create a table with appropriate headers-->
-        <table class="table" align='center'>
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Description</th>
-                    <th>Location</th>
-                    <th>Library</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-        </table>
-        <br>
-        <!--<a href="nextpage.html" style="margin-left:5em">Previous</a>-->
-        <!--<a href="nextpage.html" style="margin-left:49em">Next</a>-->
-        <br><br>
+        <div class="container">
+            <div class="table-responsive">
+            <table class="table table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th class="col-lg-2">Time</th>
+                        <th>Description</th>
+                        <th class="col-lg-2">Location</th>
+                        <th class="col-lg-2">Library</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody class="body">
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <br><br><br>
         
-        <script type="text/javascript" src="secrets.js"></script>
-        <script>
+        <script type="text/javascript" src="secrets.js"></script> 
+        <script type="text/javascript">
             // gets local json file
             /*global $*/
             /*global ODS_api*/
-            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey="+ODS_api+"&callback=?", function(meeting){
+            $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=" + ODS_api + "&callback=?", function(meeting){
                 var lengthOfMeeting = meeting.records.length;
                 // initialize a variable to display the title (today's date) at the top
                 var title = true
@@ -54,7 +67,7 @@
                             row.push("<td>" + record.fields.status + "</td>");
                             row.push("</tr>");
                             row.join('');
-                            $('.table').append(row);
+                            $('.body').append(row + '');
                             if(title){
                                 $('#a').append(record.fields.date + '<br>');
                                 title = false
@@ -73,25 +86,25 @@
                 
                 for (var i = 0; i < meeting.records.length; i++) {
                     var record = meeting.records[i];
-                    var time = record.fields.time.split(' ')
+                    var time = record.fields.time.split(' ');
                     if(time[1] == 'PM' && time[0].split(':')[0] != '12'){
                         var row = [];
-                            row.push("<tr>");
-                            row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
-                            row.push("<td>" + record.fields.description + "</td>");
-                            row.push("<td>" + record.fields.location + "</td>");
-                            row.push("<td>"+ record.fields.library + "</td>");
-                            row.push("<td>" + record.fields.status + "</td>");
-                            row.push("</tr>");
-                            row.join('');
-                            $('.table').append(row);
-                            if(title){
-                                $('#a').append(record.fields.date + '<br>');
-                                title = false
-                            }
-                        }else{
-                            continue;
+                        row.push("<tr>");
+                        row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
+                        row.push("<td>" + record.fields.description + "</td>");
+                        row.push("<td>" + record.fields.location + "</td>");
+                        row.push("<td>"+ record.fields.library + "</td>");
+                        row.push("<td>" + record.fields.status + "</td>");
+                        row.push("</tr>");
+                        row.join('');
+                        $('.body').append(row + '');
+                        if(title){
+                            $('#a').append(record.fields.date + '<br>');
+                            title = false
                         }
+                    }else{
+                        continue;
+                    }
                 }
             });
         </script>
