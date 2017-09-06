@@ -12,7 +12,7 @@ def create_save_files():
     # Link to CHFS directory
     unpublished_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/activepatrons.json'
     # Open file to write
-    patrons = open("activepatrons.json", 'w')
+    patrons = open(unpublished_file, 'w')
     return patrons
 
 # Function to get the date
