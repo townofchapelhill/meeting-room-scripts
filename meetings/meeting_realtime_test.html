@@ -1,0 +1,35 @@
+<html>
+    
+    <head>
+         <link rel="stylesheet" href="odometer-theme-plaza.css"/>
+        <script src="odometer.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    
+    <body>
+        <p class="odometer">407</p>
+        
+        <script>
+            /*global $*/
+            var myVar;
+            var x = 0;
+            
+            function myFunction() {
+                myVar = setInterval(alertFunc, 3000);
+            }
+            
+            function alertFunc() {
+              $(".odometer").text(300+getNum());
+            }
+            
+            function getNum(){
+                x+=100;
+                return x;
+            }
+            
+            myFunction();
+            
+        </script>
+    </body>
+    
+</html>
