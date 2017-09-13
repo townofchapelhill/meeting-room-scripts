@@ -1,7 +1,7 @@
-# Library Dashboards
+# xmltocsv
 
 
-This repository contains html pages that organize information into dashboards for library use.
+This repository contains python scripts that converts XML to CSV for upload to the Chapel Hill Open Data portal at http://www.chapelhillopendata.org
 
 <pre>
  _____ _                      _   _   _ _ _ _ 
