@@ -61,26 +61,9 @@
                     for (var i = 0; i < meeting.records.length; i++) {
                         var record = meeting.records[i];
                         var time = record.fields.time.split(' ');
-                        // meeting room info and title
+                        // skip table data
                         if(record.fields.status == "Approved" || record.fields.status == "Pending"){
-                            if(time[1] == 'AM' || time[0].split(':')[0] == '12'){
-                                var row = [];
-                                row.push("<tr>");
-                                row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
-                                row.push("<td>" + record.fields.description + "</td>");
-                                row.push("<td>" + record.fields.location + "</td>");
-                                row.push("<td>"+ record.fields.library + "</td>");
-                                row.push("<td>" + record.fields.status + "</td>");
-                                row.push("</tr>");
-                                row.join('');
-                                $('.body').append(row + '');
-                                if(title){
-                                    $('#a').append(record.fields.date + '<br>');
-                                    title = false
-                                }
-                            }else{
-                                continue;
-                            }
+                            continue;
                         // monthly popularity data
                         }else if(record.fields.enddate == '%'){
                             popularity_headers.push(record.fields.date);
