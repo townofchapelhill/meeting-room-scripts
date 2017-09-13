@@ -1,5 +1,5 @@
 # meeting_room_scripts
-A list of meeting room scripts for the Chapel Hill Open Data portal.
+A list of meeting room scripts for the Chapel Hill Open Data portal. Data is retrieved through an XML feed at http://kb.demcosoftware.com/article.php?id=720.
 
 <pre>
  _____ _                      _   _   _ _ _ _ 
