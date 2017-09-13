@@ -1,7 +1,5 @@
-# Library Dashboards
-
-
-This repository contains html pages that organize information into dashboards for library use.
+# meeting_room_scripts
+A list of meeting room scripts for the Chapel Hill Open Data portal.
 
 <pre>
  _____ _                      _   _   _ _ _ _ 
@@ -12,4 +10,4 @@ This repository contains html pages that organize information into dashboards fo
  \____/_| |_|\__,_| .__/ \___|_| \_| |_/_|_|_|
                   | |                         
                   |_|       
-</pre>                  
+</pre>           
