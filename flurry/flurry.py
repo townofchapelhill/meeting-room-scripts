@@ -3,15 +3,15 @@ import requests
 import json
 import datetime
 import os
+import traceback
 # Import API secrets file
 import secrets 
+
+print("imported all libraries")
 
 # Access specific flurry query, pass header authentication, store data in var
 def get_flurry():
     
-    # Create var to put data in flurry directory
-    unpublished_file = '//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv'
-
     # Find date and create vars to hold the span of one day 
     now = str(datetime.date.today())
     one_day_ago = str(datetime.date.today() - datetime.timedelta(days=1))
@@ -24,12 +24,16 @@ def get_flurry():
     data = requests.get(url,headers=headers).json()
     data_list = data["rows"]
     
+    print("data fetched")
+    
     # Open the file to write/append to 
-    flurrycsv = open(unpublished_file, "a")
+    flurrycsv = open('//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv', "a")
+    print("flurry opened")
     
     # Write CSV headings if the file is empty
-    if os.stat("flurry.csv").st_size == 0:
+    if os.stat("//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv").st_size == 0:
         flurrycsv.write("Company Name, Average Time Per Session, Active Devices, Language, Time Spent, Sessions, Date and Time, Average Time Per Device, App Name, New Devices"+"\n")
+    print("added headings")
     
     # Set counter
     i = 0
@@ -51,21 +55,23 @@ def get_flurry():
         i += 1 
     flurrycsv.close()
     
-    # Transfer file contents to a new file in the unpub directory
-    flurrydirect = "//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv"
-    unpubdirect = open(flurrydirect)
-    with open(flurrycsv) as f:
-        with open(unpubdirect, "w") as f1:
-            for line in f:
-                f1.write(line) 
-                
-    # Close files
-    unpubdirect.close()
-    flurrycsv.close()
-    
+    # Copy file to unpub direct
+    f = open('//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv')
+    f1 = open("//CHFS/Shared Documents/OpenData/datasets/unpublished/flurry.csv", "w")
+    for line in f:
+        f1.write(line)
+        
+   
 # Main function
 def main():
-    get_flurry()
     
+    errors = open("log_flurryerror.txt", "w")
+    try:
+        get_flurry()
+    except Exception as exc:
+        now = str(datetime.date.today())
+        errors.write(traceback.format_exc())
+        errors.write(now)
 
-# Call mai
+# Call main
+main()
