@@ -9,7 +9,6 @@
     </head>
     
     <body>
-        <p class="odometer">407</p>
         <div class="container">
             <h1 align="center"> Meeting Room Data </h1>
             <div class="row">
@@ -22,13 +21,13 @@
                 </div>
                 <div class="col-lg-4">
                     <h3> Monthly Popularity Data </h3>
-                    <p><span id=4></span><span id=11 class="odometer">0</span>%</p>
-                    <p><span id=5></span><span id=12 class="odometer">0</span>%</p>
-                    <p><span id=6></span><span id=13 class="odometer">0</span>%</p>
-                    <p><span id=7></span><span id=14 class="odometer">0</span>%</p>
-                    <p><span id=8></span><span id=15 class="odometer">0</span>%</p>
-                    <p><span id=9></span><span id=16 class="odometer">0</span>%</p>
-                    <p><span id=10></span><span id=17 class="odometer">0</span>%</p>
+                    <p><span id=4></span><span id=11 class="odometer">0</span></p>
+                    <p><span id=5></span><span id=12 class="odometer">0</span></p>
+                    <p><span id=6></span><span id=13 class="odometer">0</span></p>
+                    <p><span id=7></span><span id=14 class="odometer">0</span></p>
+                    <p><span id=8></span><span id=15 class="odometer">0</span></p>
+                    <p><span id=9></span><span id=16 class="odometer">0</span></p>
+                    <p><span id=10></span><span id=17 class="odometer">0</span></p>
                 </div>
             </div>
         </div>
@@ -92,38 +91,18 @@
                         }
                     }
                     
-                    for (var i = 0; i < meeting.records.length; i++) {
-                        var record = meeting.records[i];
-                        var time = record.fields.time.split(' ');
-                        if(time[1] == 'PM' && time[0].split(':')[0] != '12'){
-                            var row = [];
-                            row.push("<tr>");
-                            row.push("<td>" + record.fields.time + " - " + record.fields.endtime + "</td>");
-                            row.push("<td>" + record.fields.description + "</td>");
-                            row.push("<td>" + record.fields.location + "</td>");
-                            row.push("<td>"+ record.fields.library + "</td>");
-                            row.push("<td>" + record.fields.status + "</td>");
-                            row.push("</tr>");
-                            row.join('');
-                            $('.body').append(row + '');
-                            if(title){
-                                $('#a').append(record.fields.date + '<br>');
-                                title = false
-                            }
-                        }else{
-                            continue;
-                        }
-                    }
-                    
+                    //loops through id's 0 - 3 and adds usage values
                     for (var i = 0; i < usage_values.length; i++) {
                         $('#' + i).text(usage_values[i]);
                     }
                     
+                    //loops through id's 4 - 10 and adds popularity headers
                     for (var i = 0; i < popularity_headers.length; i++) {
                         var j = i + 4;
                         $('#' + j).text(popularity_headers[i]);
                     }
-                    
+
+                    //loops through id's 11 - 17 and adds popularity values
                     for (var i = 0; i < popularity_values.length; i++) {
                         var j = i + 11;
                         $('#' + j).text(popularity_values[i]);
