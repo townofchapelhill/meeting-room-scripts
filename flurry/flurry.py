@@ -9,8 +9,8 @@ import secrets
 # Access specific flurry query, pass header authentication, store data in var
 def get_flurry():
     
-    # Create var to put data in unpublished directory
-    unpublished_file = '//CHFS/Shared Documents/OpenData/datasets/unpublished/flurry.csv'
+    # Create var to put data in flurry directory
+    unpublished_file = '//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv'
 
     # Find date and create vars to hold the span of one day 
     now = str(datetime.date.today())
@@ -48,11 +48,24 @@ def get_flurry():
         flurrycsv.write(data_list[i]['app|name']+ ", ")
         flurrycsv.write(str(data_list[i]['newDevices']))
         flurrycsv.write("\n")
-        i += 1    
-
+        i += 1 
+    flurrycsv.close()
+    
+    # Transfer file contents to a new file in the unpub directory
+    flurrydirect = "//CHFS/Shared Documents/OpenData/datasets/flurrydata/flurry.csv"
+    unpubdirect = open(flurrydirect)
+    with open(flurrycsv) as f:
+        with open(unpubdirect, "w") as f1:
+            for line in f:
+                f1.write(line) 
+                
+    # Close files
+    unpubdirect.close()
+    flurrycsv.close()
+    
 # Main function
 def main():
     get_flurry()
+    
 
-# Call main   
-main()
+# Call mai
