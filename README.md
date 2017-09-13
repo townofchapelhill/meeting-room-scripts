@@ -1,5 +1,7 @@
-# meeting_room_scripts
-A list of meeting room scripts for the Chapel Hill Open Data portal.
+# xmltocsv
+
+
+This repository contains python scripts that converts XML to CSV for upload to the Chapel Hill Open Data portal at http://www.chapelhillopendata.org
 
 <pre>
  _____ _                      _   _   _ _ _ _ 
@@ -10,4 +12,4 @@ A list of meeting room scripts for the Chapel Hill Open Data portal.
  \____/_| |_|\__,_| .__/ \___|_| \_| |_/_|_|_|
                   | |                         
                   |_|       
-</pre>           
+</pre>                  
