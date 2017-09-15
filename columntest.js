@@ -4,16 +4,12 @@ var minutes = 120;
 var milliseconds = min_to_ms(minutes);
 
 // function that converts minutes to milliseconds for use in update_interval function
-function min_to_ms(min){
+function min_to_ms(min) {
     return min*60*1000;
 }
 
-// function that gets a json and updates the page 
-function update_page() {
-    // gets local json file
-    /*global $*/
-    /*global ODS_api*/
-    // update meeting room info
+// update meeting data
+function update_meetings() {
     $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=meeting-room-usage&rows=1000&sort=time&apikey=" + ODS_api + "&callback=?", function(meeting){
         // initialize a variable to display the title (today's date) at the top and list of usage data
         var usage_values = [];
@@ -39,16 +35,34 @@ function update_page() {
         }
         
     });
-    
-    // update library card info
+}
+
+// update library card data
+function update_cards() {
     $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patron-dashboard&rows=1&apikey=" + ODS_api + "&callback=?", function(exp_patron){
+        // save expired amount of cards in variable
         var amount_exp = exp_patron.nhits;
         $.getJSON("https://www.chapelhillopendata.org/api/records/1.0/search/?dataset=patrons&rows=1&apikey=" + ODS_api + "&callback=?", function(all_patrons){
+            // save total amount of cards in variable
             var amount_total = all_patrons.nhits;
+            // add expired amount and calculate percentage
             $('#l0').text(amount_exp.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
             $('#l1').text((amount_exp/amount_total * 100).toFixed(2));
         });
-    });
+    });    
+}
+
+// function that gets a json and updates the page 
+function update_page() {
+    // gets local json file
+    /*global $*/
+    /*global ODS_api*/
+    
+    // update meeting room info
+    update_meetings();
+    
+    // update library card info
+    update_cards();
     
 }
 
