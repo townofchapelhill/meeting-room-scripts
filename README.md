@@ -1,7 +1,5 @@
-# Library Dashboards
-
-
-This repository contains html pages that organize information into dashboards for library use.
+# meeting_room_scripts
+A list of meeting room scripts for the Chapel Hill Open Data portal. Data is retrieved through an XML feed at http://kb.demcosoftware.com/article.php?id=720.
 
 <pre>
  _____ _                      _   _   _ _ _ _ 
@@ -12,4 +10,4 @@ This repository contains html pages that organize information into dashboards fo
  \____/_| |_|\__,_| .__/ \___|_| \_| |_/_|_|_|
                   | |                         
                   |_|       
-</pre>                  
+</pre>           
