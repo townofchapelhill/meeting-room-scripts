@@ -18,13 +18,6 @@ class Reservation(object):
         self.location = ''
         self.status = ''
 
-# def clear_file(day):
-#     try:
-#         if os.stat('new_reservations.csv').st_size != 0:
-#             os.remove('new_reservations.csv')
-#     except:
-#         pass
-#     get_reservations(day)
 
 def get_reservations():
     reservations = []
@@ -83,14 +76,14 @@ def write_csv(obj_reservations):
         scrubbed_value = re.sub('[^A-Za-z0-9_\-\.: ]', ' ', str(res['description']))
         res['description'] = scrubbed_value
 
-    with open('aggregate_reservations.csv', 'a') as res_headers:
+    with open('//CHFS/Shared Documents/OpenData/datasets/staging/aggregate_reservations.csv', 'a') as res_headers:
         try:
             fieldnames = obj_reservations[0].keys()
             csv_writer = csv.DictWriter(res_headers, fieldnames=fieldnames, extrasaction='ignore', delimiter=',')
         except:
             pass
 
-        if os.stat('aggregate_reservations.csv').st_size == 0:
+        if os.stat('//CHFS/Shared Documents/OpenData/datasets/staging/aggregate_reservations.csv').st_size == 0:
             csv_writer.writeheader()
         
         for entry in obj_reservations:
