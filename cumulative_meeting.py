@@ -8,12 +8,12 @@ now = datetime.datetime.now()
 today = datetime.date.today()
 
 # set xml files to variables
-usage_file = '//CHFS/Shared Documents/OpenData/datasets/staging/cumulreservationData.xml'
-fixed_file = '//CHFS/Shared Documents/OpenData/datasets/staging/convertedcumulReservationData.xml'
+usage_file = 'cumulreservationData.xml'
+fixed_file = 'convertedcumulReservationData.xml'
 
 # throw an error if a "/logs" directory doesn't exist
 try:
-    log_file = open('logs/' + str(today) + '-cumulativeMeetingsLog.txt', 'w')
+    log_file = open(str(today) + '-cumulativeMeetingsLog.txt', 'w')
 except:
     error_file = open('error.txt', 'w')
     error_file.write('ERROR - "logs" directory not found\n')
