@@ -6,7 +6,7 @@ import csv
 import re
 import sys
 
-day = 0
+day = -143
 
 class Reservation(object):
     def __init__(self, startDate=None, startTime=None, endDate=None, endTime=None, description=None, location=None, status=None):
@@ -18,22 +18,32 @@ class Reservation(object):
         self.location = ''
         self.status = ''
 
+# def clear_file(day):
+#     try:
+#         if os.stat('aggregate_reservations.csv').st_size != 0:
+#             os.remove('aggregate_reservations.csv')
+#     except:
+#         pass
+#     get_reservations(day)
 
-def get_reservations():
+def get_reservations(day):
     reservations = []
+    
+    if day == 1:
+        sys.exit()
 
     url = "http://chapelhill.evanced.info/spaces/patron/spacesxml?dm=xml&do=" + str(day)
     decoded_url = urllib.request.urlopen(url).read().decode('utf-8')
     stripped_url_list = "<root>" + decoded_url[52:-14] + "</root>" + "\n"
 
-    with open("historic_reservations.xml", "w", encoding="utf-8") as dump_file:
+    with open("reservations.xml", "w", encoding="utf-8") as dump_file:
         dump_file.write(stripped_url_list)
 
-    parse_xml()
+    parse_xml(day)
 
-def parse_xml():
+def parse_xml(day):
     obj_reservations = []
-    xmldoc = minidom.parse("historic_reservations.xml")
+    xmldoc = minidom.parse("reservations.xml")
     res_list = xmldoc.getElementsByTagName('item')
     for item in res_list:
         new_res = Reservation()
@@ -65,29 +75,33 @@ def parse_xml():
         
         obj_reservations.append(new_res.__dict__)
         try:
-            os.remove('historic_reservations.xml')
+            os.remove('reservations.xml')
         except:
             pass
     
-    write_csv(obj_reservations)
+    write_csv(obj_reservations, day)
 
-def write_csv(obj_reservations):
+def write_csv(obj_reservations, day):
     for res in obj_reservations:
         scrubbed_value = re.sub('[^A-Za-z0-9_\-\.: ]', ' ', str(res['description']))
         res['description'] = scrubbed_value
 
-    with open('//CHFS/Shared Documents/OpenData/datasets/staging/aggregate_reservations.csv', 'a') as res_headers:
+    with open('aggregate_reservations.csv', 'a') as res_headers:
         try:
             fieldnames = obj_reservations[0].keys()
             csv_writer = csv.DictWriter(res_headers, fieldnames=fieldnames, extrasaction='ignore', delimiter=',')
         except:
             pass
 
-        if os.stat('//CHFS/Shared Documents/OpenData/datasets/staging/aggregate_reservations.csv').st_size == 0:
+        if os.stat('aggregate_reservations.csv').st_size == 0:
             csv_writer.writeheader()
         
         for entry in obj_reservations:
             csv_writer.writerow(entry)
+    
+    day += 1
+    print(day)
+    get_reservations(day)
 
-
-get_reservations()
+# clear_file(day)
+get_reservations(day)

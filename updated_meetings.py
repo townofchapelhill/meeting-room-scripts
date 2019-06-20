@@ -39,7 +39,7 @@ def get_reservations(day):
     with open("reservations.xml", "w", encoding="utf-8") as dump_file:
         dump_file.write(stripped_url_list)
 
-    parse_xml(day)
+    # parse_xml(day)
 
 def parse_xml(day):
     obj_reservations = []
